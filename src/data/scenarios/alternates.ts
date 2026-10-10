@@ -1,0 +1,292 @@
+import type { Pathway, Source, Status } from '@/types';
+import type { Scenario } from './types';
+import { COMMON_GUIDED } from './guided';
+
+/** Lighter alternate scenarios used for link / keyword routing in Magic Start. Demo data — for R&D to confirm. */
+
+const pw = (
+  id: string,
+  rank: number,
+  name: string,
+  comp: [string, number, number][],
+  predicted: [string, number, Status][],
+  s: [number, number, number, number],
+  costPerKg: number,
+  equipment: string[],
+  hazards: string[],
+  citations: string[],
+): Pathway => ({
+  id, rank, name,
+  composition: comp.map(([materialId, a, b]) => ({ materialId, range: [a, b] })),
+  predicted: predicted.map(([propertyId, value, status]) => ({ propertyId, value, status })),
+  scores: { targetMatch: s[0], cost: s[1], availability: s[2], overall: s[3] },
+  costPerKg, equipment, hazards, citations,
+});
+
+const src = (id: string, type: Source['type'], title: string, year: number, relevance: number, finding: string, cluster: string): Source => ({ id, type, title, year, relevance, finding, cluster });
+
+const bench = (id: string, name: string, sub: string, cls: string, price: number, values: [string, number | string, string, 'TDS' | 'MSDS' | 'Lab-tested'][]) => ({
+  id, name, maker: 'Competitor 3', subcategoryId: sub, standardClass: cls, pricePerKg: price, updated: '2026-08-30',
+  values: values.map(([propertyId, value, unit, tag], i) => ({ propertyId, value, unit, tag, page: 1 + (i % 3), confidence: 0.82 + ((i * 7) % 15) / 100 })),
+  versions: [{ v: 1, date: '2026-08-30', note: 'Created from TDS' }],
+});
+
+export const CRYSTALLINE: Scenario = {
+  id: 'crystalline', label: 'Crystalline waterproofing coating', chip: 'Crystalline waterproofing',
+  keywords: ['waterproof', 'crystalline', 'basement', 'leak', 'tank', 'membrane', 'coating'],
+  projectName: 'Crystalline waterproofing — Basement & tanks', codePrefix: 'HX-WP',
+  docType: 'Technical Data Sheet', productGuess: 'Crystalline cementitious waterproofing slurry',
+  categoryId: 'wp-coatings', subcategoryId: 'wpc-cryst', chemistry: ['crystalline'], form: 'powder',
+  standard: 'EN 1504-2 / ACI 212.3R PRAH', standardAlt: 'EN 1504-2',
+  useCase: { substrate: 'Concrete', surfaces: ['Wall', 'Floor', 'Submerged'], materialType: 'Concrete surface', size: { w: 0, h: 0, t: 2 }, exposure: 'exterior', climate: 'Hot-humid', appTemp: [5, 40], load: 'None', method: 'Brush/roller', timeToGroutH: 0, timeToTrafficH: 24, standardClass: 'EN 1504-2' },
+  useCaseConfidence: { substrate: 0.94, surfaces: 0.9, materialType: 0.7, size: 0.66, exposure: 0.9, climate: 0.72, appTemp: 0.8, load: 0.9, method: 0.88, standardClass: 0.86 },
+  guided: [
+    { id: 'where', q: 'Where is the water coming in?', picture: 'WavesHorizontal', answer: 0, options: [
+      { label: 'Basement walls from soil', icon: 'Mountain', sets: { surfaces: ['Wall', 'Floor'] } },
+      { label: 'Water tank / pool', icon: 'WavesHorizontal', sets: { surfaces: ['Submerged'] } },
+      { label: 'Roof terrace', icon: 'House', sets: { surfaces: ['Floor'] } },
+    ] },
+    ...COMMON_GUIDED.slice(1),
+  ],
+  benchmarks: [bench('bm-wp', 'Benchmark W', 'wpc-cryst', 'EN 1504-2', 95, [['permeability', 8, 'mm', 'TDS'], ['neg-pressure', 7, 'bar', 'TDS'], ['self-healing', 0.4, 'mm', 'Lab-tested'], ['compressive', 32, 'N/mm²', 'TDS'], ['pull-off', 1.6, 'N/mm²', 'TDS'], ['coverage', 1.2, 'kg/m²', 'TDS']])],
+  targets: [
+    { propertyId: 'permeability', operator: '<=', value: 10, priority: 'must', std: '≤ 50 (EN 12390-8)', stdMax: 50, bench: 8, confidence: 0.9, reason: 'Match Benchmark W' },
+    { propertyId: 'neg-pressure', operator: '>=', value: 7, priority: 'must', bench: 7, confidence: 0.86, reason: 'Basement walls see negative-side pressure' },
+    { propertyId: 'self-healing', operator: '>=', value: 0.4, priority: 'must', bench: 0.4, confidence: 0.78, reason: 'Crystalline growth seals hairline cracks' },
+    { propertyId: 'pull-off', operator: '>=', value: 1.5, priority: 'important', std: '≥ 0.8', stdMin: 0.8, bench: 1.6, confidence: 0.88 },
+    { propertyId: 'compressive', operator: '>=', value: 30, priority: 'important', bench: 32, confidence: 0.84 },
+    { propertyId: 'setting-time', operator: 'between', value: [120, 300], priority: 'nice', confidence: 0.7 },
+    { propertyId: 'coverage', operator: '<=', value: 1.2, priority: 'nice', bench: 1.2, confidence: 0.68 },
+  ],
+  top3: [
+    { id: 'neg-pressure', reason: 'Basements fail from the negative side first' },
+    { id: 'self-healing', reason: 'Differentiator vs plain cementitious slurries' },
+    { id: 'cost', reason: 'Benchmark W at ₹ 95/kg leaves room for ₹ 60 RM' },
+  ],
+  constraints: { costCeiling: 60, budgetBand: 'mid', materialLimits: [], compliance: ['No chlorides', 'Potable-water contact'], site: { tMin: 5, tMax: 40, rhMax: 95 }, mustHaves: ['Safe for drinking water'], remark: 'Two-coat brush application, 25 kg bag.' },
+  summary: {
+    scientist: '**Helix is formulating:** a **crystalline cementitious waterproofing slurry** to **EN 1504-2**, brush-applied on **basement walls and water tanks**, resisting **≥ 7 bar negative-side pressure** with **≥ 0.4 mm crack self-healing**, at **≤ ₹ 60 / kg** raw material cost.',
+    plain: '**Helix is making:** a **brush-on coating that stops water** coming through **basement walls and tanks**, even when water **pushes from behind**, and that **seals small cracks by itself**.',
+  },
+  pathways: [
+    pw('P1', 1, 'Silicate-catalysed crystalline blend', [['opc53', 55, 60], ['sand', 28, 33], ['cryst-active', 6, 8], ['sodium-silicate', 1, 2], ['mhec', 0.15, 0.2]], [['permeability', 7, 'pass'], ['neg-pressure', 7.5, 'pass'], ['self-healing', 0.38, 'borderline'], ['pull-off', 1.7, 'pass']], [0.88, 0.8, 0.85, 0.85], 41.2, ['Ribbon blender'], ['Alkaline powder — skin/eye irritant'], ['w1', 'w2']),
+    pw('P2', 2, 'High-active dosage, low silicate', [['opc53', 55, 58], ['sand', 28, 32], ['cryst-active', 9, 11], ['mhec', 0.15, 0.2]], [['permeability', 6, 'pass'], ['neg-pressure', 8, 'pass'], ['self-healing', 0.45, 'pass'], ['pull-off', 1.5, 'pass']], [0.92, 0.6, 0.8, 0.8], 52.4, ['Ribbon blender'], ['Higher cost'], ['w1']),
+    pw('P3', 3, 'Silica-fume densified slurry', [['opc53', 56, 60], ['sand', 30, 34], ['silica-fume', 4, 6], ['cryst-active', 3, 4]], [['permeability', 9, 'pass'], ['neg-pressure', 6.2, 'borderline'], ['self-healing', 0.25, 'fail'], ['pull-off', 1.8, 'pass']], [0.7, 0.9, 0.9, 0.74], 26.5, ['Ribbon blender'], ['Weak self-healing'], ['w3']),
+  ],
+  balanceMaterial: 'sand', leverMaterial: 'cryst-active',
+  clusters: ['Crystal growth chemistry', 'Negative-side pressure', 'Self-healing of cracks', 'Bond to damp substrates', 'Cost & fillers'],
+  query: '(crystalline OR "capillary waterproofing") AND (concrete) AND ("self-healing" OR "self-sealing") AND ("negative pressure" OR hydrostatic)',
+  sources: [
+    src('w1', 'Paper', 'Crystalline admixtures and self-sealing of cracks in concrete', 2022, 0.94, 'Cracks up to 0.4 mm sealed within 28 d of wet curing.', 'Self-healing of cracks'),
+    src('w2', 'Patent', 'Silicate-catalysed crystalline waterproofing composition', 2020, 0.87, 'Sodium silicate at 1–2 % accelerates crystal growth.', 'Crystal growth chemistry'),
+    src('w3', 'Paper', 'Silica fume densification of cementitious coatings', 2019, 0.72, 'Densification lowers permeability but not self-healing.', 'Cost & fillers'),
+    src('w4', 'TDS', 'Benchmark W — Technical Data Sheet', 2025, 0.9, '7 bar negative pressure, 0.4 mm self-healing.', 'Negative-side pressure'),
+  ],
+  measured: ['permeability', 'neg-pressure', 'self-healing', 'pull-off', 'compressive'],
+  mixingProtocol: ['Dry-blend active chemicals with 10 % of the sand for 2 min.', 'Add OPC and remaining sand; mix 4 min.', 'Mix with 22 % water to slurry consistency; apply 2 coats at 0.6 kg/m² each.'],
+  testPlan: [
+    { test: 'Water penetration', method: 'EN 12390-8', specimens: 3, ages: '28 d', dueInDays: 21 },
+    { test: 'Negative-side pressure', method: 'CRD C48', specimens: 3, ages: '28 d', dueInDays: 21 },
+    { test: 'Crack self-healing', method: 'internal', specimens: 3, ages: '28 d wet', dueInDays: 28 },
+    { test: 'Pull-off bond', method: 'EN 1542', specimens: 5, ages: '28 d', dueInDays: 21 },
+    { test: 'Compressive strength', method: 'EN 196-1', specimens: 3, ages: '28 d', dueInDays: 21 },
+  ],
+};
+
+export const MICRO_CONCRETE: Scenario = {
+  id: 'microconcrete', label: 'Micro-concrete repair', chip: 'Micro-concrete repair',
+  keywords: ['repair', 'micro', 'jacket', 'column', 'spalling', 'micro-concrete'],
+  projectName: 'Free-flow micro-concrete — Column jacketing', codePrefix: 'HX-MC',
+  docType: 'Technical Data Sheet', productGuess: 'Free-flow shrinkage-compensated micro-concrete',
+  categoryId: 'micro-concrete', subcategoryId: 'mc-ff', chemistry: ['cementitious'], form: 'powder',
+  standard: 'EN 1504-3 R4', standardAlt: 'ASTM C928',
+  useCase: { substrate: 'Concrete', surfaces: ['Wall', 'Floor'], materialType: 'Column jacket 50–100 mm', size: { w: 0, h: 0, t: 75 }, exposure: 'exterior', climate: 'Hot-humid', appTemp: [10, 40], load: 'Heavy vehicular', method: 'Pour', timeToGroutH: 0, timeToTrafficH: 24, standardClass: 'EN 1504-3 R4' },
+  useCaseConfidence: { substrate: 0.95, surfaces: 0.8, materialType: 0.76, size: 0.7, exposure: 0.85, climate: 0.7, appTemp: 0.82, load: 0.75, method: 0.94, standardClass: 0.9 },
+  guided: [
+    { id: 'what', q: 'What are you repairing?', picture: 'Hammer', answer: 0, options: [
+      { label: 'Columns and beams', icon: 'Columns3', sets: { materialType: 'Column jacket 50–100 mm', method: 'Pour' } },
+      { label: 'Floor slab', icon: 'Square', sets: { materialType: 'Slab overlay', method: 'Pour' } },
+    ] },
+    ...COMMON_GUIDED.slice(1),
+  ],
+  benchmarks: [bench('bm-mc', 'Benchmark M', 'mc-ff', 'EN 1504-3 R4', 28, [['compressive', 62, 'N/mm²', 'TDS'], ['compressive-1d', 22, 'N/mm²', 'TDS'], ['flow', 280, 'mm', 'TDS'], ['pull-off', 2.2, 'N/mm²', 'TDS'], ['shrinkage', 0.6, 'mm/m', 'Lab-tested']])],
+  targets: [
+    { propertyId: 'compressive', operator: '>=', value: 55, priority: 'must', std: '≥ 45 (R4)', stdMin: 45, bench: 62, confidence: 0.93 },
+    { propertyId: 'compressive-1d', operator: '>=', value: 20, priority: 'important', bench: 22, confidence: 0.85 },
+    { propertyId: 'flow', operator: '>=', value: 260, priority: 'must', bench: 280, confidence: 0.88 },
+    { propertyId: 'pull-off', operator: '>=', value: 2.0, priority: 'must', std: '≥ 2.0 (R4)', stdMin: 2.0, bench: 2.2, confidence: 0.9 },
+    { propertyId: 'shrinkage', operator: '<=', value: 0.8, priority: 'important', bench: 0.6, confidence: 0.76 },
+    { propertyId: 'chloride', operator: '<=', value: 0.05, priority: 'must', std: '≤ 0.05', stdMax: 0.05, confidence: 0.95 },
+  ],
+  top3: [{ id: 'compressive', reason: 'Structural R4 class' }, { id: 'flow', reason: 'Must self-compact in 75 mm jackets' }, { id: 'cost', reason: 'Benchmark M at ₹ 28/kg' }],
+  constraints: { costCeiling: 18, budgetBand: 'mid', materialLimits: [], compliance: ['No chlorides'], site: { tMin: 10, tMax: 40, rhMax: 95 }, mustHaves: ['Fast setting'], remark: '' },
+  summary: {
+    scientist: '**Helix is formulating:** a **free-flow micro-concrete** to **EN 1504-3 R4**, poured into **75 mm column jackets**, with **≥ 55 N/mm² at 28 d**, **≥ 260 mm flow** and **shrinkage-compensated**, at **≤ ₹ 18 / kg**.',
+    plain: '**Helix is making:** a **pourable repair concrete** that **flows into column jackets on its own**, becomes **very strong**, and **does not shrink or crack**.',
+  },
+  pathways: [
+    pw('P1', 1, 'PCE + silica fume + plastic expansion', [['opc53', 34, 38], ['agg-6', 56, 60], ['silica-fume', 3, 5], ['pce-powder', 0.2, 0.3], ['expansion', 0.4, 0.6]], [['compressive', 60, 'pass'], ['flow', 275, 'pass'], ['pull-off', 2.1, 'pass'], ['shrinkage', 0.7, 'pass']], [0.9, 0.82, 0.9, 0.87], 15.9, ['Pan mixer'], ['Alkaline powder — skin/eye irritant'], ['m1', 'm2']),
+    pw('P2', 2, 'Fly-ash blended, low-heat', [['opc53', 28, 32], ['fly-ash', 6, 9], ['agg-6', 56, 60], ['pce-powder', 0.2, 0.3], ['expansion', 0.4, 0.5]], [['compressive', 51, 'borderline'], ['flow', 290, 'pass'], ['pull-off', 2.0, 'pass'], ['shrinkage', 0.65, 'pass']], [0.78, 0.92, 0.7, 0.79], 13.1, ['Pan mixer'], ['Fly-ash supply varies'], ['m3']),
+    pw('P3', 3, 'High-cement rapid strength', [['opc53', 40, 44], ['agg-6', 52, 56], ['pce-powder', 0.25, 0.35], ['expansion', 0.5, 0.6]], [['compressive', 66, 'pass'], ['flow', 250, 'borderline'], ['pull-off', 2.3, 'pass'], ['shrinkage', 0.95, 'fail']], [0.72, 0.75, 0.9, 0.73], 16.8, ['Pan mixer'], ['Shrinkage risk', 'High heat of hydration'], ['m1']),
+  ],
+  balanceMaterial: 'agg-6', leverMaterial: 'silica-fume',
+  clusters: ['Flowability & PCE', 'Shrinkage compensation', 'Bond to old concrete', 'Early strength'],
+  query: '("micro-concrete" OR "flowable repair mortar") AND (PCE OR superplasticizer) AND (shrinkage OR expansion) AND "EN 1504-3"',
+  sources: [
+    src('m1', 'Paper', 'Silica fume in self-compacting repair mortars', 2021, 0.9, '4 % silica fume adds ~8 N/mm² at 28 d.', 'Early strength'),
+    src('m2', 'Patent', 'Shrinkage-compensated flowable repair composition', 2020, 0.84, 'Plastic expansion 0.5 % offsets drying shrinkage.', 'Shrinkage compensation'),
+    src('m3', 'Paper', 'Fly-ash blended repair mortars: strength and durability', 2019, 0.72, 'Lower heat; 28 d strength −10 %.', 'Flowability & PCE'),
+  ],
+  measured: ['compressive', 'compressive-1d', 'flow', 'pull-off', 'shrinkage'],
+  mixingProtocol: ['Dry-blend PCE and expansion agent with silica fume (master-batch).', 'Charge OPC and aggregate; add master-batch; mix 4 min.', 'Mix with 13 % water in pan mixer for 3 min; check flow before casting.'],
+  testPlan: [
+    { test: 'Compressive strength', method: 'EN 12190', specimens: 3, ages: '1 d, 28 d', dueInDays: 21 },
+    { test: 'Flow', method: 'EN 13395-1', specimens: 1, ages: 'fresh', dueInDays: 1 },
+    { test: 'Pull-off bond', method: 'EN 1542', specimens: 5, ages: '28 d', dueInDays: 21 },
+    { test: 'Shrinkage', method: 'EN 12617-4', specimens: 3, ages: '28 d', dueInDays: 28 },
+  ],
+};
+
+export const PCE: Scenario = {
+  id: 'pce', label: 'PCE superplasticiser admixture', chip: 'PCE superplasticiser',
+  keywords: ['pce', 'admixture', 'superplasticiser', 'superplasticizer', 'slump', 'rmc', 'ready-mix'],
+  projectName: 'PCE superplasticiser — RMC slump retention', codePrefix: 'HX-AD',
+  docType: 'Technical Data Sheet', productGuess: 'PCE-based high-range water reducer (slump retaining)',
+  categoryId: 'admixtures', subcategoryId: 'adm-pce', chemistry: ['PCE/SNF'], form: 'liquid',
+  standard: 'IS 9103 / EN 934-2 T3.1/3.2', standardAlt: 'ASTM C494 Type F',
+  useCase: { substrate: 'Fresh concrete', surfaces: ['Floor'], materialType: 'M30–M50 ready-mix concrete', size: { w: 0, h: 0, t: 0 }, exposure: 'exterior', climate: 'Hot-dry', appTemp: [20, 45], load: 'None', method: 'Pour', timeToGroutH: 0, timeToTrafficH: 0, standardClass: 'IS 9103' },
+  useCaseConfidence: { substrate: 0.9, surfaces: 0.6, materialType: 0.85, climate: 0.8, appTemp: 0.82, method: 0.93, standardClass: 0.9 },
+  guided: [
+    { id: 'haul', q: 'How long is the truck on the road?', picture: 'Truck', answer: 1, options: [
+      { label: 'Under 30 min', icon: 'Zap', sets: { timeToTrafficH: 0.5 } },
+      { label: '1–2 hours', icon: 'Truck', sets: { timeToTrafficH: 2 } },
+    ] },
+    COMMON_GUIDED[1],
+  ],
+  benchmarks: [bench('bm-pce', 'Benchmark P', 'adm-pce', 'IS 9103', 145, [['solids', 30, '%', 'TDS'], ['water-reduction', 28, '%', 'TDS'], ['slump-retention', 160, 'mm', 'Lab-tested'], ['chloride', 0.1, '% w/w', 'TDS'], ['ph', 6.5, '–', 'MSDS']])],
+  targets: [
+    { propertyId: 'water-reduction', operator: '>=', value: 25, priority: 'must', std: '≥ 20 (IS 9103 SP)', stdMin: 20, bench: 28, confidence: 0.92 },
+    { propertyId: 'slump-retention', operator: '>=', value: 150, priority: 'must', bench: 160, confidence: 0.86 },
+    { propertyId: 'solids', operator: 'between', value: [28, 32], priority: 'important', bench: 30, confidence: 0.9 },
+    { propertyId: 'chloride', operator: '<=', value: 0.2, priority: 'must', std: '≤ 0.2', stdMax: 0.2, bench: 0.1, confidence: 0.95 },
+    { propertyId: 'ph', operator: 'between', value: [5.5, 7.5], priority: 'nice', bench: 6.5, confidence: 0.8 },
+    { propertyId: 'compressive-1d', operator: '>=', value: 12, priority: 'important', confidence: 0.7 },
+  ],
+  top3: [{ id: 'slump-retention', reason: '2 h haul in hot-dry weather' }, { id: 'water-reduction', reason: 'M40+ needs w/c ≤ 0.38' }, { id: 'cost', reason: 'RMC buyers are price-led' }],
+  constraints: { costCeiling: 70, budgetBand: 'economy', materialLimits: [], compliance: ['No chlorides'], site: { tMin: 20, tMax: 45, rhMax: 60 }, mustHaves: ['Works in heat'], remark: 'IBC tote, 6-month shelf life.' },
+  summary: {
+    scientist: '**Helix is formulating:** a **PCE high-range water reducer** to **IS 9103 / EN 934-2 T3.1/3.2** for **M30–M50 ready-mix** in **hot-dry** conditions, with **≥ 25 % water reduction** and **≥ 150 mm slump after 60 min**, at **≤ ₹ 70 / kg**.',
+    plain: '**Helix is making:** a **liquid added to ready-mix concrete** so it **stays easy to pour for 2 hours** in **hot weather** while **using less water** for stronger concrete.',
+  },
+  pathways: [
+    pw('P1', 1, 'HPEG PCE + gluconate retarder', [['pce-liquid', 55, 60], ['gluconate', 2, 3], ['liq-defoamer', 0.1, 0.2], ['biocide', 0.1, 0.1], ['water', 37, 42]], [['water-reduction', 27, 'pass'], ['slump-retention', 155, 'pass'], ['solids', 30, 'pass']], [0.9, 0.8, 0.9, 0.86], 67.5, ['Stirred tank'], ['Biocide — skin sensitiser'], ['a1']),
+    pw('P2', 2, 'Blend with slump-retaining PCE', [['pce-liquid', 60, 64], ['gluconate', 1, 2], ['liq-defoamer', 0.1, 0.2], ['biocide', 0.1, 0.1], ['water', 34, 38]], [['water-reduction', 29, 'pass'], ['slump-retention', 170, 'pass'], ['solids', 31.5, 'pass']], [0.94, 0.65, 0.85, 0.82], 74.8, ['Stirred tank'], ['Cost over ceiling risk'], ['a1', 'a2']),
+    pw('P3', 3, 'Low-dose PCE, high gluconate', [['pce-liquid', 48, 52], ['gluconate', 4, 5], ['liq-defoamer', 0.1, 0.1], ['biocide', 0.1, 0.1], ['water', 43, 47]], [['water-reduction', 22, 'borderline'], ['slump-retention', 140, 'borderline'], ['solids', 27, 'borderline']], [0.65, 0.95, 0.9, 0.74], 60.1, ['Stirred tank'], ['Set retardation risk at low temperature'], ['a2']),
+  ],
+  balanceMaterial: 'water', leverMaterial: 'pce-liquid',
+  clusters: ['Side-chain length', 'Slump retention', 'Retarder synergy', 'Clay tolerance'],
+  query: '(polycarboxylate OR PCE) AND ("slump retention" OR "slump loss") AND (gluconate OR retarder) AND "hot weather"',
+  sources: [
+    src('a1', 'Paper', 'Side-chain density of HPEG PCEs and slump retention', 2023, 0.91, 'Longer side chains retain slump +30 mm at 60 min.', 'Side-chain length'),
+    src('a2', 'Paper', 'Sodium gluconate and PCE synergy in hot weather', 2021, 0.83, '0.05 % bwc gluconate extends workability 45 min.', 'Retarder synergy'),
+  ],
+  measured: ['water-reduction', 'slump-retention', 'solids', 'compressive-1d'],
+  mixingProtocol: ['Charge water; start stirrer at 300 rpm.', 'Add PCE solution slowly over 5 min.', 'Add gluconate, defoamer and biocide; stir 20 min; check solids and pH.'],
+  testPlan: [
+    { test: 'Water reduction', method: 'IS 9103', specimens: 3, ages: 'fresh', dueInDays: 2 },
+    { test: 'Slump retention @ 60 min', method: 'IS 1199', specimens: 3, ages: 'fresh', dueInDays: 2 },
+    { test: 'Compressive 1 d', method: 'IS 516', specimens: 3, ages: '1 d', dueInDays: 3 },
+  ],
+};
+
+export const GYPSUM: Scenario = {
+  id: 'gypsum', label: 'Gypsum plaster', chip: 'Gypsum plaster',
+  keywords: ['gypsum', 'plaster', 'putty', 'skim', 'pop'],
+  projectName: 'Gypsum plaster — Interior machine-applied', codePrefix: 'HX-GP',
+  docType: 'Technical Data Sheet', productGuess: 'Lightweight gypsum plaster (machine-applied)',
+  categoryId: 'plaster', subcategoryId: 'pl-gypsum', chemistry: ['cementitious'], form: 'powder',
+  standard: 'IS 2547 / EN 13279-1 B4/50/2', standardAlt: 'EN 13279-1',
+  useCase: { substrate: 'Block masonry', surfaces: ['Wall'], materialType: 'Interior plaster 10–15 mm', size: { w: 0, h: 0, t: 12 }, exposure: 'interior', climate: 'Composite', appTemp: [5, 35], load: 'None', method: 'Spray', timeToGroutH: 0, timeToTrafficH: 0, standardClass: 'EN 13279-1 B4/50/2' },
+  useCaseConfidence: { substrate: 0.88, surfaces: 0.95, materialType: 0.8, exposure: 0.96, climate: 0.66, method: 0.84, standardClass: 0.85 },
+  guided: [COMMON_GUIDED[1], COMMON_GUIDED[3]],
+  benchmarks: [bench('bm-gp', 'Benchmark G', 'pl-gypsum', 'EN 13279-1 B4', 14, [['setting-time', 110, 'min', 'TDS'], ['compressive', 4.5, 'N/mm²', 'TDS'], ['flexural', 2.2, 'N/mm²', 'TDS'], ['pull-off', 0.3, 'N/mm²', 'TDS'], ['coverage', 9.5, 'kg/m²', 'TDS']])],
+  targets: [
+    { propertyId: 'setting-time', operator: 'between', value: [90, 150], priority: 'must', bench: 110, confidence: 0.88 },
+    { propertyId: 'compressive', operator: '>=', value: 4, priority: 'must', std: '≥ 2.0', stdMin: 2, bench: 4.5, confidence: 0.9 },
+    { propertyId: 'flexural', operator: '>=', value: 2, priority: 'important', std: '≥ 1.0', stdMin: 1, bench: 2.2, confidence: 0.86 },
+    { propertyId: 'pull-off', operator: '>=', value: 0.3, priority: 'important', std: '≥ 0.1', stdMin: 0.1, bench: 0.3, confidence: 0.82 },
+    { propertyId: 'water-retention', operator: '>=', value: 95, priority: 'important', confidence: 0.78 },
+    { propertyId: 'coverage', operator: '<=', value: 9.5, priority: 'nice', bench: 9.5, confidence: 0.7 },
+  ],
+  top3: [{ id: 'setting-time', reason: 'Machine application needs 90–150 min window' }, { id: 'compressive', reason: 'Hardness for nail-holding' }, { id: 'cost', reason: 'Commodity price band' }],
+  constraints: { costCeiling: 10, budgetBand: 'economy', materialLimits: [], compliance: ['Low VOC', 'Green building'], site: { tMin: 5, tMax: 35, rhMax: 80 }, mustHaves: ['White colour'], remark: '' },
+  summary: {
+    scientist: '**Helix is formulating:** a **lightweight gypsum plaster** to **EN 13279-1 B4/50/2**, **machine-sprayed** on **interior block walls** at 10–15 mm, with **90–150 min setting** and **≥ 4 N/mm² compressive**, at **≤ ₹ 10 / kg**.',
+    plain: '**Helix is making:** a **smooth white inside-wall plaster** that can be **sprayed by machine**, gives **enough time to level** and **hardens strong enough to hold nails**.',
+  },
+  pathways: [
+    pw('P1', 1, 'Protein-retarded β-gypsum + perlite', [['gypsum', 88, 92], ['perlite', 3, 5], ['lime', 2, 3], ['mhec', 0.2, 0.25], ['gyp-retarder', 0.08, 0.12]], [['setting-time', 115, 'pass'], ['compressive', 4.3, 'pass'], ['flexural', 2.1, 'pass']], [0.9, 0.85, 0.9, 0.87], 8.9, ['Ribbon blender'], ['Dust — use extraction'], ['g1']),
+    pw('P2', 2, 'Low-perlite dense plaster', [['gypsum', 93, 96], ['lime', 2, 3], ['mhec', 0.18, 0.22], ['gyp-retarder', 0.08, 0.1]], [['setting-time', 105, 'pass'], ['compressive', 5.2, 'pass'], ['flexural', 2.4, 'pass']], [0.88, 0.9, 0.95, 0.85], 7.9, ['Ribbon blender'], ['Higher coverage kg/m²'], ['g1']),
+    pw('P3', 3, 'HPMC-modified for spray', [['gypsum', 88, 91], ['perlite', 4, 6], ['lime', 2, 3], ['hpmc60', 0.2, 0.25], ['gyp-retarder', 0.1, 0.12]], [['setting-time', 135, 'pass'], ['compressive', 3.7, 'borderline'], ['flexural', 1.9, 'borderline']], [0.76, 0.84, 0.88, 0.78], 9.2, ['Ribbon blender'], [], ['g2']),
+  ],
+  balanceMaterial: 'gypsum', leverMaterial: 'gyp-retarder',
+  clusters: ['Retarders', 'Lightweight fillers', 'Water retention', 'Spray rheology'],
+  query: '("gypsum plaster" OR hemihydrate) AND (retarder OR protein) AND (perlite OR lightweight) AND spray',
+  sources: [
+    src('g1', 'Paper', 'Protein retarders in β-hemihydrate plasters', 2020, 0.88, '0.1 % protein retarder extends set to 120 min.', 'Retarders'),
+    src('g2', 'Paper', 'Cellulose ethers for machine-applied gypsum plasters', 2022, 0.8, 'HPMC improves sprayability but softens surface.', 'Spray rheology'),
+  ],
+  measured: ['setting-time', 'compressive', 'flexural', 'pull-off'],
+  mixingProtocol: ['Pre-blend retarder and cellulose ether with lime.', 'Add gypsum and perlite; mix 4 min.', 'Mix 60 % water/powder; measure set by Vicat.'],
+  testPlan: [
+    { test: 'Setting time', method: 'EN 13279-2', specimens: 2, ages: 'fresh', dueInDays: 1 },
+    { test: 'Compressive / flexural', method: 'EN 13279-2', specimens: 3, ages: '7 d', dueInDays: 7 },
+    { test: 'Pull-off bond', method: 'EN 13279-2', specimens: 5, ages: '7 d', dueInDays: 7 },
+  ],
+};
+
+export const EPOXY_GROUT: Scenario = {
+  id: 'epoxy', label: 'Epoxy grout', chip: 'Epoxy grout · RG',
+  keywords: ['epoxy', 'grout', 'stain', 'kitchen', 'pool grout', 'rg'],
+  projectName: 'Epoxy grout — Commercial kitchens', codePrefix: 'HX-EG',
+  docType: 'Technical Data Sheet', productGuess: '3-component epoxy tile grout',
+  categoryId: 'epoxy-grouts', subcategoryId: 'eg-rg', chemistry: ['epoxy'], form: '2-component',
+  standard: 'EN 13888 RG / ISO 13007-3 RG', standardAlt: 'ISO 13007-3 RG',
+  useCase: { substrate: 'Existing tiles', surfaces: ['Floor', 'Wet area'], materialType: 'Vitrified', size: { w: 600, h: 600, t: 9 }, exposure: 'interior', climate: 'Hot-humid', appTemp: [15, 35], load: 'Heavy foot', method: 'Notched trowel', timeToGroutH: 0, timeToTrafficH: 24, standardClass: 'EN 13888 RG' },
+  useCaseConfidence: { substrate: 0.8, surfaces: 0.92, materialType: 0.86, exposure: 0.95, load: 0.9, method: 0.7, standardClass: 0.92 },
+  guided: [COMMON_GUIDED[0], COMMON_GUIDED[2], COMMON_GUIDED[3]],
+  benchmarks: [bench('bm-eg', 'Benchmark E', 'eg-rg', 'EN 13888 RG', 380, [['compressive', 52, 'N/mm²', 'TDS'], ['flexural', 32, 'N/mm²', 'TDS'], ['water-absorption', 0.08, '%', 'TDS'], ['pot-life', 45, 'h', 'TDS'], ['chem-resistance', 'class A', 'class', 'TDS']])],
+  targets: [
+    { propertyId: 'compressive', operator: '>=', value: 45, priority: 'must', std: '≥ 45', stdMin: 45, bench: 52, confidence: 0.93 },
+    { propertyId: 'flexural', operator: '>=', value: 30, priority: 'must', std: '≥ 30', stdMin: 30, bench: 32, confidence: 0.92 },
+    { propertyId: 'water-absorption', operator: '<=', value: 0.1, priority: 'must', std: '≤ 0.1', stdMax: 0.1, bench: 0.08, confidence: 0.9 },
+    { propertyId: 'shrinkage', operator: '<=', value: 1.5, priority: 'important', std: '≤ 1.5', stdMax: 1.5, confidence: 0.85 },
+    { propertyId: 'pot-life', operator: '>=', value: 0.75, priority: 'important', confidence: 0.75 },
+    { propertyId: 'voc', operator: '<=', value: 30, priority: 'nice', confidence: 0.7 },
+  ],
+  top3: [{ id: 'water-absorption', reason: 'Kitchen hygiene — no stain uptake' }, { id: 'pot-life', reason: 'Large kitchen floors need time' }, { id: 'cost', reason: 'Benchmark E at ₹ 380/kg' }],
+  constraints: { costCeiling: 120, budgetBand: 'premium', materialLimits: [{ materialId: 'reactive-diluent', maxPct: 3 }], compliance: ['Low VOC'], site: { tMin: 15, tMax: 35, rhMax: 85 }, mustHaves: ['Low smell'], remark: '' },
+  summary: {
+    scientist: '**Helix is formulating:** a **3-component epoxy grout** to **EN 13888 RG**, for **600 × 600 vitrified floors** in **commercial kitchens**, with **water absorption ≤ 0.1 %**, **≥ 45 min pot life** and **class A chemical resistance**, at **≤ ₹ 120 / kg**.',
+    plain: '**Helix is making:** a **stain-proof grout** for **busy kitchen floors** that **never soaks up water or grease** and gives **enough time to finish a big floor**.',
+  },
+  pathways: [
+    pw('P1', 1, 'BPA epoxy + cycloaliphatic amine, silica filled', [['epoxy-resin', 14, 16], ['amine-hardener', 7, 8], ['silica-flour', 72, 76], ['pigment', 1, 1.5]], [['compressive', 55, 'pass'], ['flexural', 33, 'pass'], ['water-absorption', 0.05, 'pass']], [0.92, 0.85, 0.9, 0.88], 70.2, ['Planetary mixer', 'Twin-pack filler'], ['Epoxy — skin sensitiser', 'Amine — corrosive'], ['e1']),
+    pw('P2', 2, 'Diluted low-viscosity for easier cleaning', [['epoxy-resin', 13, 15], ['reactive-diluent', 1.5, 2.5], ['amine-hardener', 7, 8], ['silica-flour', 72, 76], ['pigment', 1, 1.5]], [['compressive', 48, 'pass'], ['flexural', 30.5, 'pass'], ['water-absorption', 0.09, 'pass']], [0.82, 0.86, 0.75, 0.8], 70.9, ['Planetary mixer'], ['Reactive diluent pending approval'], ['e2']),
+    pw('P3', 3, 'High-filler economy', [['epoxy-resin', 11, 12], ['amine-hardener', 5.5, 6], ['silica-flour', 80, 82], ['pigment', 1, 1]], [['compressive', 46, 'borderline'], ['flexural', 27, 'borderline'], ['water-absorption', 0.12, 'borderline']], [0.62, 0.95, 0.9, 0.72], 54.6, ['Planetary mixer'], ['Harder to clean off tile faces'], ['e1']),
+  ],
+  balanceMaterial: 'silica-flour', leverMaterial: 'epoxy-resin',
+  clusters: ['Hardener chemistry', 'Filler packing', 'Cleanability', 'Chemical resistance'],
+  query: '("epoxy grout" OR "reaction resin grout") AND (cycloaliphatic OR amine) AND ("water absorption" OR stain) AND "EN 13888"',
+  sources: [
+    src('e1', 'Paper', 'Filler packing in epoxy tile grouts', 2021, 0.86, 'Bimodal silica at 74 % maximises flexural strength.', 'Filler packing'),
+    src('e2', 'Patent', 'Easy-clean epoxy grout composition', 2019, 0.78, 'Reactive diluent 2 % eases washing without strength loss.', 'Cleanability'),
+  ],
+  measured: ['compressive', 'flexural', 'water-absorption', 'shrinkage'],
+  mixingProtocol: ['Mix part A + part B 1 min with paddle.', 'Add part C filler; mix 2 min to uniform paste.', 'Cast prisms within 15 min; cure 7 d at 23 °C.'],
+  testPlan: [
+    { test: 'Compressive / flexural', method: 'EN 12808-3', specimens: 3, ages: '7 d', dueInDays: 7 },
+    { test: 'Water absorption', method: 'EN 12808-5', specimens: 3, ages: '7 d', dueInDays: 8 },
+    { test: 'Shrinkage', method: 'EN 12808-4', specimens: 3, ages: '7 d', dueInDays: 8 },
+  ],
+};

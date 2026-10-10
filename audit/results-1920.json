@@ -1,0 +1,18 @@
+{
+  "LAYOUT-projects-1920": {
+    "status": "PASS",
+    "viewport": "1920"
+  },
+  "LAYOUT-project-1920": {
+    "status": "PASS",
+    "viewport": "1920"
+  },
+  "LAYOUT-new-1920": {
+    "status": "PASS",
+    "viewport": "1920"
+  },
+  "DARK-1920": {
+    "status": "PASS",
+    "viewport": "1920"
+  }
+}
