@@ -109,6 +109,18 @@ export const RAW_MATERIALS: RawMaterial[] = [
   M('foam-catalyst', 'Foam accelerator (amine)', 'Reaction speed', 'Tertiary amine', 'Supplier PU', 800, 200, 'approved'),
   M('acrylate-monomer', 'Methacrylate injection monomer', 'Gel former', 'Hydroxyethyl methacrylate blend', 'Supplier Chem', 260, 800, 'approved'),
   M('persulphate', 'Sodium persulphate', 'Initiator', '99 %', 'Supplier Chem', 180, 400, 'approved'),
+  // tile, stone and flooring (Phase 4 demos)
+  M('hydrophobe', 'Powder hydrophobic agent', 'Water repellence', 'Silane on carrier', 'Supplier Chem', 650, 300, 'approved'),
+  M('silane-siloxane', 'Alkyl silane / siloxane', 'Impregnating repellent', 'Octyl triethoxysilane blend', 'Supplier Chem', 600, 500, 'approved'),
+  M('fluoropolymer', 'Fluorinated acrylic copolymer', 'Oil and stain repellent', '20 % solids', 'Supplier Polymer-3', 2200, 100, 'pending', ['silane-siloxane']),
+  M('cac', 'Calcium aluminate cement', 'Rapid binder', '40 % Al₂O₃', 'Supplier Cement', 40, 6000, 'approved'),
+  M('anhydrite', 'Anhydrite (calcium sulphate)', 'Ettringite former', 'Synthetic, 10 µm', 'Supplier Min', 12, 5000, 'approved'),
+  M('tartaric', 'Tartaric acid', 'Retarder', '99 %', 'Supplier Chem', 400, 200, 'approved'),
+  M('li-carbonate', 'Lithium carbonate', 'Accelerator (CAC)', '99 %', 'Supplier Chem', 1200, 50, 'approved'),
+  M('corundum', 'Corundum aggregate 0.5–2 mm', 'Wear aggregate', 'Brown fused alumina', 'Supplier Min', 45, 6000, 'approved', ['quartz-agg']),
+  M('quartz-agg', 'Quartz aggregate 0.5–2 mm', 'Wear aggregate', 'Washed, angular', 'Supplier Min', 8, 20000, 'approved'),
+  M('pu-polyol', 'Polyether polyol blend', 'PU binder (A)', 'Castor-modified, OH 250', 'Supplier PU', 220, 2000, 'approved'),
+  M('mdi-iso', 'Polymeric MDI', 'PU hardener (B)', 'NCO 31 %', 'Supplier PU', 180, 2500, 'approved'),
   M('fatty-ester', 'Fatty-acid ester release additive', 'Chemical release', 'Methyl ester', 'Supplier Chem', 130, 1500, 'approved'),
 ];
 

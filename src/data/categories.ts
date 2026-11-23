@@ -140,7 +140,7 @@ export const CATEGORIES: Category[] = [
     sku('eg-rg', 'RG epoxy grout (3-part)', ['epoxy'], ['2-component', 'paste'], 'EN 13888 RG / ISO 13007-3 RG', T.epoxyGrout),
   ]),
   cat('stone-care', 4, 'Stone care and sealers', 'Gem', 'Impregnating sealers', 'Protects natural stone from stains', [
-    sku('sc-imp', 'Impregnating sealer', ['acrylic'], ['liquid'], 'internal', T.coating),
+    sku('sc-imp', 'Impregnating sealer', ['acrylic'], ['liquid'], 'EN 1504-2 (hydrophobic impregnation)', [...T.coating, 'water-absorption', 'stain-resistance']),
   ]),
   cat('slc', 4, 'Self-levelling compounds', 'AlignHorizontalJustifyCenter', 'CT-C25-F6 underlayments', 'Makes floors flat before finishing', [
     sku('slc-ct', 'Cementitious SLC CT-C25-F6', ['cementitious', 'polymer-modified'], ['powder'], 'EN 13813', T.repair),

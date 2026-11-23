@@ -232,7 +232,7 @@ export const GYPSUM: Scenario = {
 export const EPOXY_GROUT: Scenario = {
   id: 'epoxy', label: 'Epoxy grout', chip: 'Epoxy grout · RG',
   example: 'Stain-proof epoxy grout for a commercial kitchen floor',
-  keywords: ['epoxy', 'grout', 'stain', 'kitchen', 'pool grout', 'rg'],
+  keywords: ['epoxy', 'epoxy grout', 'stain', 'kitchen', 'pool grout', 'rg'],
   projectName: 'Epoxy grout — Commercial kitchens', codePrefix: 'HX-EG',
   docType: 'Technical Data Sheet', productGuess: '3-component epoxy tile grout',
   categoryId: 'epoxy-grouts', subcategoryId: 'eg-rg', chemistry: ['epoxy'], form: '2-component',

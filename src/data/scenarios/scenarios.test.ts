@@ -7,7 +7,7 @@ import { costPerKg } from '@/lib/cost';
 import { routeScenario, SCENARIOS, scenarioForSub } from '.';
 
 /** Groups whose every subcategory has a demo scenario; grows one phase at a time. */
-const COVERED_GROUPS = [1, 2, 3];
+const COVERED_GROUPS = [1, 2, 3, 4];
 
 const midSum = (c: { range: [number, number] }[]) => c.reduce((n, x) => n + (x.range[0] + x.range[1]) / 2, 0);
 
@@ -70,6 +70,21 @@ describe('demo scenarios', () => {
 
   it.each(SCENARIOS.map((s) => [s.id, s] as const))('%s: its example brief routes to it', (_, s) => {
     expect(routeScenario(s.example).id).toBe(s.id);
+  });
+
+  // briefs that mention another product's keyword, routed by what is being made
+  it.each([
+    ['Tile adhesive with cellulose fibre for exterior walls', 'tile'],
+    ['Tile adhesive with a calcium formate accelerator', 'tile'],
+    ['Waterproofing under bathroom tiles', 'crystalline'],
+    ['Need something for my building', 'tile'],
+    ['Shotcrete accelerator for a tunnel', 'sc-af'],
+    ['Epoxy floor for a car park ramp', 'rf-epoxy'],
+    ['Grout for tile joints in a living room', 'tg-cg2'],
+    ['Grout for tile joints in a kitchen', 'epoxy'],
+    ['Epoxy tile grout for a pool', 'epoxy'],
+  ])('"%s" routes to %s', (brief, id) => {
+    expect(routeScenario(brief).id).toBe(id);
   });
 
   it.each(CATEGORIES.filter((c) => COVERED_GROUPS.includes(c.group)).flatMap((c) => c.subcategories.map((x) => [x.id] as const)))('%s has a demo scenario', (id) => {

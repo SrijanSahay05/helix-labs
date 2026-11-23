@@ -85,6 +85,7 @@ export const PROPERTIES: Property[] = [
   P('thermal-conductivity', 'durability', 'Thermal conductivity', 'How much heat gets through', 'W/m·K', { EN: 'EN 1745 / EN 12667', ASTM: 'ASTM C518' }),
   P('reflectance', 'durability', 'Solar reflectance', 'Bounces sunlight off', '%', { ASTM: 'ASTM E1347 / C1549' }),
   P('cold-flex', 'durability', 'Cold flexibility', 'Bends without cracking in cold', '°C', { EN: 'EN 1109', ASTM: 'ASTM D5147' }),
+  P('stain-resistance', 'durability', 'Stain resistance', 'Wipes clean after spills', 'rating 1–5', { EN: 'EN ISO 10545-14', internal: 'internal' }),
   P('crack-reduction', 'durability', 'Plastic-shrinkage crack reduction', 'Fewer early cracks', '%', { ASTM: 'ASTM C1579' }),
   P('moisture-loss', 'durability', 'Moisture loss (72 h)', 'Water lost while curing', 'kg/m²', { ASTM: 'ASTM C156' }),
   P('release-efficiency', 'durability', 'Release efficiency', 'Clean surface after demoulding', '%', { internal: 'internal' }),

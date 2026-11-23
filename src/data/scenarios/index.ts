@@ -5,10 +5,11 @@ import { TILE_WHITE_S1 } from './tileWhiteS1';
 import { CONCRETE_ROUTE_ORDER, CONCRETE_SCENARIOS } from './concrete';
 import { MASONRY_ROUTE_ORDER, MASONRY_SCENARIOS } from './masonry';
 import { WATERPROOFING_ROUTE_ORDER, WATERPROOFING_SCENARIOS } from './waterproofing';
+import { FINISH_BEFORE_EPOXY, FLOOR_ROUTE_ORDER, GROUT_AFTER_EPOXY, TILE_ADHESIVE_ROUTE_ORDER, TILE_SCENARIOS } from './tile';
 import type { Scenario } from './types';
 import { hashString, seeded } from '@/lib/motion';
 
-export const SCENARIOS: Scenario[] = [TILE_SCENARIO, TILE_WHITE_S1, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, EPOXY_GROUT, ...CONCRETE_SCENARIOS, ...MASONRY_SCENARIOS, ...WATERPROOFING_SCENARIOS];
+export const SCENARIOS: Scenario[] = [TILE_SCENARIO, TILE_WHITE_S1, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, EPOXY_GROUT, ...CONCRETE_SCENARIOS, ...MASONRY_SCENARIOS, ...WATERPROOFING_SCENARIOS, ...TILE_SCENARIOS];
 export const SCENARIO: Record<string, Scenario> = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));
 
 /** Keyword must start a word ("waterproof" matches "waterproofing"), so "rg" no longer fires inside "large". */
@@ -21,8 +22,9 @@ const hasWord = (t: string, k: string) => new RegExp(`\\b${k.replace(/[.*+?^${}(
 export function routeScenario(input: string, pinned?: string): Scenario {
   if (pinned && SCENARIO[pinned]) return SCENARIO[pinned];
   const t = input.toLowerCase();
-  // order matters: specific variants first, "epoxy grout" before generic "grout", "integral waterproof" before "waterproof"
-  const order = [TILE_WHITE_S1, EPOXY_GROUT, ...WATERPROOFING_ROUTE_ORDER, ...MASONRY_ROUTE_ORDER, ...CONCRETE_ROUTE_ORDER, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, TILE_SCENARIO];
+  // order matters: specific variants first; tile adhesives before groups 1–3 so "tile adhesive with fibre" stays a tile run;
+  // resin floors before epoxy grout, cement grouts after it; crystalline is the waterproofing catch-all
+  const order = [TILE_WHITE_S1, ...TILE_ADHESIVE_ROUTE_ORDER, TILE_SCENARIO, ...FINISH_BEFORE_EPOXY, EPOXY_GROUT, ...GROUT_AFTER_EPOXY, ...WATERPROOFING_ROUTE_ORDER, ...FLOOR_ROUTE_ORDER, ...MASONRY_ROUTE_ORDER, ...CONCRETE_ROUTE_ORDER, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM];
   for (const s of order) if (s.keywords.some((k) => hasWord(t, k))) return s;
   if (t.includes('grout') && (t.includes('precision') || t.includes('machine') || t.includes('base plate'))) return MICRO_CONCRETE;
   return TILE_SCENARIO;
