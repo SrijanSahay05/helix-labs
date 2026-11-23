@@ -45,6 +45,8 @@ export const PROPERTIES: Property[] = [
   P('air-content', 'rheological', 'Air content', 'Air bubbles in the mix', '%', { IS: 'IS 1199', EN: 'EN 1015-7', ASTM: 'ASTM C231' }),
   P('bleeding', 'rheological', 'Bleeding', 'Water rising to the top', '%', { EN: 'EN 480-4', ASTM: 'ASTM C940' }),
   P('drying-time', 'rheological', 'Drying time', 'Dry to touch in', 'h', { ASTM: 'ASTM D1640' }),
+  P('foam-expansion', 'rheological', 'Foam expansion', 'How much the foam grows', '×', { EN: 'EN 1504-5', internal: 'internal' }),
+  P('gel-time', 'rheological', 'Gel / reaction time', 'How fast it turns solid', 's', { EN: 'EN 1504-5', internal: 'internal' }),
   P('slump-retention', 'rheological', 'Slump retention @ 60 min', 'Stays workable in the truck', 'mm', { IS: 'IS 1199', EN: 'EN 12350-2', ASTM: 'ASTM C143' }),
   P('water-reduction', 'rheological', 'Water reduction', 'Water saved in the mix', '%', { IS: 'IS 9103', EN: 'EN 934-2', ASTM: 'ASTM C494' }),
   // Mechanical
@@ -66,6 +68,9 @@ export const PROPERTIES: Property[] = [
   P('hardness', 'mechanical', 'Hardness', 'Surface hardness', 'Shore D', { ASTM: 'ASTM D2240' }),
   P('early-strength', 'mechanical', 'Early strength (6 h)', 'Strength a few hours after spraying', 'N/mm²', { EN: 'EN 14488-2' }),
   P('residual-flexural', 'mechanical', 'Residual flexural strength (fR3)', 'Strength left after cracking', 'N/mm²', { EN: 'EN 14651', ASTM: 'ASTM C1609' }),
+  P('tensile-strength', 'mechanical', 'Tensile strength (sheet)', 'How hard it pulls before tearing', 'N/50 mm', { EN: 'EN 12311-1', ASTM: 'ASTM D5147' }),
+  P('movement-capability', 'mechanical', 'Movement capability', 'How much the joint can move', '%', { EN: 'ISO 11600', ASTM: 'ASTM C719' }),
+  P('secant-modulus', 'mechanical', 'Secant modulus at 100 %', 'How soft the sealant stays', 'N/mm²', { EN: 'ISO 8339', ASTM: 'ASTM D412' }),
   P('pull-off', 'mechanical', 'Pull-off bond', 'Sticks to the old concrete', 'N/mm²', { IS: 'IS 13311', EN: 'EN 1542', ASTM: 'ASTM C1583' }),
   // Durability
   P('water-absorption', 'durability', 'Water absorption', 'Soaks up water', '%', { EN: 'EN 12808-5', ASTM: 'ASTM C642' }),
@@ -78,6 +83,8 @@ export const PROPERTIES: Property[] = [
   P('efflorescence', 'durability', 'Efflorescence', 'White salt marks', 'rating', { internal: 'internal' }),
   P('coverage', 'durability', 'Coverage', 'How far a bag goes', 'kg/m²', { internal: 'internal' }),
   P('thermal-conductivity', 'durability', 'Thermal conductivity', 'How much heat gets through', 'W/m·K', { EN: 'EN 1745 / EN 12667', ASTM: 'ASTM C518' }),
+  P('reflectance', 'durability', 'Solar reflectance', 'Bounces sunlight off', '%', { ASTM: 'ASTM E1347 / C1549' }),
+  P('cold-flex', 'durability', 'Cold flexibility', 'Bends without cracking in cold', '°C', { EN: 'EN 1109', ASTM: 'ASTM D5147' }),
   P('crack-reduction', 'durability', 'Plastic-shrinkage crack reduction', 'Fewer early cracks', '%', { ASTM: 'ASTM C1579' }),
   P('moisture-loss', 'durability', 'Moisture loss (72 h)', 'Water lost while curing', 'kg/m²', { ASTM: 'ASTM C156' }),
   P('release-efficiency', 'durability', 'Release efficiency', 'Clean surface after demoulding', '%', { internal: 'internal' }),

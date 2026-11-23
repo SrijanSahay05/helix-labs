@@ -59,7 +59,10 @@ function genericMean(row: TargetRow, trialIdx: number, iteration: number, rnd: (
     return r2(c + half * (1 - quality) * 4);
   }
   const t = Array.isArray(row.value) ? row.value[0] : row.value;
-  return r2(row.operator === '<=' ? t / quality : t * quality);
+  // quality > 1 means better: further below a "≤" target, further above a "≥" one, for negative targets too (cold flex ≤ −5 °C)
+  const up = t >= 0 ? t * quality : t / quality;
+  const down = t >= 0 ? t / quality : t * quality;
+  return r2(row.operator === '<=' ? down : up);
 }
 
 const AGED = new Set(['adh-heat', 'adh-ft', 'self-healing', 'shrinkage', 'freeze-thaw']);

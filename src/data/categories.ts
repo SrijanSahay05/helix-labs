@@ -22,12 +22,14 @@ const T = {
   admixture: ['solids', 'ph', 'chloride', 'alkali', 'water-reduction', 'slump-retention', 'setting-time', 'air-content', 'compressive-1d', 'compressive'],
   plaster: ['water-demand', 'setting-time', 'water-retention', 'fresh-density', 'compressive', 'flexural', 'pull-off', 'shrinkage', 'coverage'],
   repair: ['water-demand', 'flow', 'setting-time', 'compressive-1d', 'compressive', 'flexural', 'pull-off', 'shrinkage', 'expansion', 'modulus', 'chloride', 'permeability'],
-  sealant: ['voc', 'viscosity', 'sag', 'pot-life', 'elongation', 'hardness', 'modulus', 'uv', 'service-temp'],
-  coating: ['solids', 'voc', 'viscosity', 'pot-life', 'pull-off', 'elongation', 'crack-bridging', 'uv', 'vapour', 'chem-resistance'],
+  sealant: ['voc', 'viscosity', 'sag', 'drying-time', 'movement-capability', 'secant-modulus', 'elongation', 'hardness', 'uv', 'service-temp'],
+  coating: ['solids', 'voc', 'viscosity', 'pot-life', 'pull-off', 'elongation', 'crack-bridging', 'uv', 'reflectance', 'vapour', 'chem-resistance'],
   shotcrete: ['solids', 'ph', 'alkali', 'chloride', 'setting-time', 'early-strength', 'compressive-1d', 'compressive'],
   fibre: ['compressive', 'flexural', 'residual-flexural', 'crack-reduction', 'shrinkage', 'air-content'],
   grindingAid: ['solids', 'ph', 'chloride', 'blaine', 'residue-45', 'mill-output', 'setting-time', 'compressive-1d', 'compressive'],
-  curing: ['solids', 'voc', 'viscosity', 'drying-time', 'moisture-loss', 'uv'],
+  curing: ['solids', 'voc', 'viscosity', 'drying-time', 'moisture-loss', 'reflectance'],
+  membrane: ['tensile-strength', 'elongation', 'cold-flex', 'service-temp', 'permeability', 'crack-bridging', 'uv', 'pull-off'],
+  injection: ['viscosity', 'gel-time', 'foam-expansion', 'pot-life', 'elongation', 'pull-off', 'water-absorption', 'service-temp'],
   release: ['viscosity', 'voc', 'release-efficiency', 'shelf-life', 'service-temp'],
   generic: ['solids', 'voc', 'viscosity', 'pot-life', 'setting-time', 'compressive', 'pull-off', 'shrinkage', 'service-temp'],
 };
@@ -111,16 +113,16 @@ export const CATEGORIES: Category[] = [
     sku('wpc-cryst', 'Crystalline', ['crystalline', 'cementitious'], ['powder'], 'EN 1504-2 / ACI 212.3R', T.waterproofing),
   ]),
   cat('membranes', 3, 'Membranes', 'StretchHorizontal', 'APP/SBS, HDPE sheet membranes', 'Sheets laid to block water', [
-    sku('mb-app', 'APP modified bitumen', ['bituminous'], ['sheet'], 'IS 16351 / EN 13707', T.coating),
-    sku('mb-hdpe', 'HDPE pre-applied', ['polymer-modified'], ['sheet'], 'EN 13967', T.coating),
+    sku('mb-app', 'APP modified bitumen', ['bituminous'], ['sheet'], 'EN 13707 / ASTM D6222', T.membrane),
+    sku('mb-hdpe', 'HDPE pre-applied', ['polymer-modified'], ['sheet'], 'EN 13967', T.membrane),
   ]),
   cat('sealants', 3, 'Joint sealants', 'Pipette', 'PU / MS / silicone sealants', 'Fills gaps between panels', [
     sku('sl-pu', 'PU sealant', ['polyurethane'], ['paste'], 'EN 15651 / ASTM C920', T.sealant),
     sku('sl-ms', 'MS polymer sealant', ['polymer-modified'], ['paste'], 'EN 15651', T.sealant),
   ]),
   cat('injection', 3, 'Injection systems for leaks', 'Syringe', 'PU foam / acrylic gel injection', 'Stops active leaks from inside', [
-    sku('inj-pu', 'PU foam injection', ['polyurethane'], ['liquid', '2-component'], 'EN 1504-5', T.generic),
-    sku('inj-acr', 'Acrylic gel injection', ['acrylic'], ['liquid', '2-component'], 'EN 1504-5', T.generic),
+    sku('inj-pu', 'PU foam injection', ['polyurethane'], ['liquid', '2-component'], 'EN 1504-5', T.injection),
+    sku('inj-acr', 'Acrylic gel injection', ['acrylic'], ['liquid', '2-component'], 'EN 1504-5', T.injection),
   ]),
   // 4 Tile, stone and flooring
   cat('tile-adhesives', 4, 'Tile and stone adhesives', 'LayoutGrid', 'C1, C2, C2TE S1 deformable', 'Sticking tiles to walls and floors', [
