@@ -9,7 +9,7 @@ import { openAskAgent } from '@/store/ask';
 import { cn } from '@/lib/cn';
 import { LIT_COUNT, PHASE, STEPS, STEP_INDEX, litCounts, seg } from './script';
 import { useChoices, useInteract, usePlayback, useProg, useReduced } from './store';
-import { CiteChip, DemoTag, ProgText, ShapeIcon, TypeTag, useScientist } from './shared';
+import { CiteChip, ProgText, ShapeIcon, TypeTag, useScientist } from './shared';
 
 function Title({ children, sub }: { children: ReactNode; sub?: ReactNode }) {
   return (
@@ -410,7 +410,6 @@ function SourceDetail({ data, src }: { data: ResearchData; src: RSource }) {
         <TypeTag type={src.type} />
         <span className="mono text-xs text-ink3">[{src.ref}]</span>
         <span className="mono text-xs text-ink3">{src.year}</span>
-        <DemoTag />
       </div>
       <div className="mt-2 text-sm font-semibold leading-5 text-ink">{src.title}</div>
       <div className="mt-2 flex items-center gap-2">

@@ -1,52 +1,27 @@
-import type { Pathway, Source, Status } from '@/types';
 import type { Scenario } from './types';
-import { COMMON_GUIDED } from './guided';
+import { COMMON_GUIDED, speedQuestion } from './guided';
+import { bench, pw, src } from './build';
 
 /** Lighter alternate scenarios used for link / keyword routing in Magic Start. Demo data — for R&D to confirm. */
 
-const pw = (
-  id: string,
-  rank: number,
-  name: string,
-  comp: [string, number, number][],
-  predicted: [string, number, Status][],
-  s: [number, number, number, number],
-  costPerKg: number,
-  equipment: string[],
-  hazards: string[],
-  citations: string[],
-): Pathway => ({
-  id, rank, name,
-  composition: comp.map(([materialId, a, b]) => ({ materialId, range: [a, b] })),
-  predicted: predicted.map(([propertyId, value, status]) => ({ propertyId, value, status })),
-  scores: { targetMatch: s[0], cost: s[1], availability: s[2], overall: s[3] },
-  costPerKg, equipment, hazards, citations,
-});
-
-const src = (id: string, type: Source['type'], title: string, year: number, relevance: number, finding: string, cluster: string): Source => ({ id, type, title, year, relevance, finding, cluster });
-
-const bench = (id: string, name: string, sub: string, cls: string, price: number, values: [string, number | string, string, 'TDS' | 'MSDS' | 'Lab-tested'][]) => ({
-  id, name, maker: 'Competitor 3', subcategoryId: sub, standardClass: cls, pricePerKg: price, updated: '2026-08-30',
-  values: values.map(([propertyId, value, unit, tag], i) => ({ propertyId, value, unit, tag, page: 1 + (i % 3), confidence: 0.82 + ((i * 7) % 15) / 100 })),
-  versions: [{ v: 1, date: '2026-08-30', note: 'Created from TDS' }],
-});
-
 export const CRYSTALLINE: Scenario = {
-  id: 'crystalline', label: 'Crystalline waterproofing coating', chip: 'Crystalline waterproofing',
+  id: 'crystalline', label: 'Crystalline waterproofing coating', chip: 'Crystalline waterproofing', example: 'Stop water seeping through basement walls and a water tank',
   keywords: ['waterproof', 'crystalline', 'basement', 'leak', 'tank', 'membrane', 'coating'],
   projectName: 'Crystalline waterproofing — Basement & tanks', codePrefix: 'HX-WP',
   docType: 'Technical Data Sheet', productGuess: 'Crystalline cementitious waterproofing slurry',
   categoryId: 'wp-coatings', subcategoryId: 'wpc-cryst', chemistry: ['crystalline'], form: 'powder',
   standard: 'EN 1504-2 / ACI 212.3R PRAH', standardAlt: 'EN 1504-2',
-  useCase: { substrate: 'Concrete', surfaces: ['Wall', 'Floor', 'Submerged'], materialType: 'Concrete surface', size: { w: 0, h: 0, t: 2 }, exposure: 'exterior', climate: 'Hot-humid', appTemp: [5, 40], load: 'None', method: 'Brush/roller', timeToGroutH: 0, timeToTrafficH: 24, standardClass: 'EN 1504-2' },
-  useCaseConfidence: { substrate: 0.94, surfaces: 0.9, materialType: 0.7, size: 0.66, exposure: 0.9, climate: 0.72, appTemp: 0.8, load: 0.9, method: 0.88, standardClass: 0.86 },
+  useCase: { substrate: 'Concrete', surfaces: ['Wall', 'Floor', 'Submerged'], waterExposure: 'Negative side (pressure from behind)', crackMovementMm: 0.4, thicknessMm: 2, coats: 2, uvExposure: 'None', potableContact: 'Yes', exposure: 'exterior', climate: 'Hot-humid', appTemp: [5, 40], load: 'None', method: 'Brush/roller', timeToTrafficH: 24, standardClass: 'EN 1504-2' },
+  useCaseConfidence: { substrate: 0.94, surfaces: 0.9, waterExposure: 0.88, crackMovementMm: 0.78, thicknessMm: 0.66, coats: 0.8, uvExposure: 0.84, potableContact: 0.86, exposure: 0.9, climate: 0.72, appTemp: 0.8, load: 0.9, method: 0.88, timeToTrafficH: 0.7, standardClass: 0.86 },
   guided: [
     { id: 'where', q: 'Where is the water coming in?', picture: 'WavesHorizontal', answer: 0, options: [
       { label: 'Basement walls from soil', icon: 'Mountain', sets: { surfaces: ['Wall', 'Floor'] } },
       { label: 'Water tank / pool', icon: 'WavesHorizontal', sets: { surfaces: ['Submerged'] } },
       { label: 'Roof terrace', icon: 'House', sets: { surfaces: ['Floor'] } },
     ] },
-    ...COMMON_GUIDED.slice(1),
+    COMMON_GUIDED[1],
+    COMMON_GUIDED[2],
+    speedQuestion('timeToTrafficH'),
   ],
   benchmarks: [bench('bm-wp', 'Benchmark W', 'wpc-cryst', 'EN 1504-2', 95, [['permeability', 8, 'mm', 'TDS'], ['neg-pressure', 7, 'bar', 'TDS'], ['self-healing', 0.4, 'mm', 'Lab-tested'], ['compressive', 32, 'N/mm²', 'TDS'], ['pull-off', 1.6, 'N/mm²', 'TDS'], ['coverage', 1.2, 'kg/m²', 'TDS']])],
   targets: [
@@ -94,20 +69,22 @@ export const CRYSTALLINE: Scenario = {
 };
 
 export const MICRO_CONCRETE: Scenario = {
-  id: 'microconcrete', label: 'Micro-concrete repair', chip: 'Micro-concrete repair',
-  keywords: ['repair', 'micro', 'jacket', 'column', 'spalling', 'micro-concrete'],
+  id: 'microconcrete', label: 'Micro-concrete repair', chip: 'Micro-concrete repair', example: 'Micro-concrete for jacketing damaged columns',
+  keywords: ['micro-concrete', 'micro concrete', 'microconcrete', 'jacket', 'jacketing', 'column'],
   projectName: 'Free-flow micro-concrete — Column jacketing', codePrefix: 'HX-MC',
   docType: 'Technical Data Sheet', productGuess: 'Free-flow shrinkage-compensated micro-concrete',
   categoryId: 'micro-concrete', subcategoryId: 'mc-ff', chemistry: ['cementitious'], form: 'powder',
   standard: 'EN 1504-3 R4', standardAlt: 'ASTM C928',
-  useCase: { substrate: 'Concrete', surfaces: ['Wall', 'Floor'], materialType: 'Column jacket 50–100 mm', size: { w: 0, h: 0, t: 75 }, exposure: 'exterior', climate: 'Hot-humid', appTemp: [10, 40], load: 'Heavy vehicular', method: 'Pour', timeToGroutH: 0, timeToTrafficH: 24, standardClass: 'EN 1504-3 R4' },
-  useCaseConfidence: { substrate: 0.95, surfaces: 0.8, materialType: 0.76, size: 0.7, exposure: 0.85, climate: 0.7, appTemp: 0.82, load: 0.75, method: 0.94, standardClass: 0.9 },
+  useCase: { substrate: 'Concrete', element: 'Column / beam', thicknessMm: 75, flowClass: 'Free-flow', exposure: 'exterior', climate: 'Hot-humid', appTemp: [10, 40], load: 'Heavy vehicular', method: 'Pour', timeToServiceH: 24, standardClass: 'EN 1504-3 R4' },
+  useCaseConfidence: { substrate: 0.95, element: 0.86, thicknessMm: 0.7, flowClass: 0.9, exposure: 0.85, climate: 0.7, appTemp: 0.82, load: 0.75, method: 0.94, timeToServiceH: 0.72, standardClass: 0.9 },
   guided: [
     { id: 'what', q: 'What are you repairing?', picture: 'Hammer', answer: 0, options: [
-      { label: 'Columns and beams', icon: 'Columns3', sets: { materialType: 'Column jacket 50–100 mm', method: 'Pour' } },
-      { label: 'Floor slab', icon: 'Square', sets: { materialType: 'Slab overlay', method: 'Pour' } },
+      { label: 'Columns and beams', icon: 'Columns3', sets: { element: 'Column / beam', thicknessMm: 75, method: 'Pour' } },
+      { label: 'Floor slab', icon: 'Square', sets: { element: 'Slab', thicknessMm: 40, method: 'Pour' } },
     ] },
-    ...COMMON_GUIDED.slice(1),
+    COMMON_GUIDED[1],
+    COMMON_GUIDED[2],
+    speedQuestion('timeToServiceH'),
   ],
   benchmarks: [bench('bm-mc', 'Benchmark M', 'mc-ff', 'EN 1504-3 R4', 28, [['compressive', 62, 'N/mm²', 'TDS'], ['compressive-1d', 22, 'N/mm²', 'TDS'], ['flow', 280, 'mm', 'TDS'], ['pull-off', 2.2, 'N/mm²', 'TDS'], ['shrinkage', 0.6, 'mm/m', 'Lab-tested']])],
   targets: [
@@ -148,18 +125,18 @@ export const MICRO_CONCRETE: Scenario = {
 };
 
 export const PCE: Scenario = {
-  id: 'pce', label: 'PCE superplasticiser admixture', chip: 'PCE superplasticiser',
+  id: 'pce', label: 'PCE superplasticiser admixture', chip: 'PCE superplasticiser', example: 'PCE superplasticiser for M40 ready-mix with 2 hours slump retention',
   keywords: ['pce', 'admixture', 'superplasticiser', 'superplasticizer', 'slump', 'rmc', 'ready-mix'],
   projectName: 'PCE superplasticiser — RMC slump retention', codePrefix: 'HX-AD',
   docType: 'Technical Data Sheet', productGuess: 'PCE-based high-range water reducer (slump retaining)',
   categoryId: 'admixtures', subcategoryId: 'adm-pce', chemistry: ['PCE/SNF'], form: 'liquid',
   standard: 'IS 9103 / EN 934-2 T3.1/3.2', standardAlt: 'ASTM C494 Type F',
-  useCase: { substrate: 'Fresh concrete', surfaces: ['Floor'], materialType: 'M30–M50 ready-mix concrete', size: { w: 0, h: 0, t: 0 }, exposure: 'exterior', climate: 'Hot-dry', appTemp: [20, 45], load: 'None', method: 'Pour', timeToGroutH: 0, timeToTrafficH: 0, standardClass: 'IS 9103' },
-  useCaseConfidence: { substrate: 0.9, surfaces: 0.6, materialType: 0.85, climate: 0.8, appTemp: 0.82, method: 0.93, standardClass: 0.9 },
+  useCase: { concreteGrade: 'M30–M50', cementType: 'OPC 53', wcRatio: 0.38, dosagePct: [0.6, 1.2], slumpRetentionMin: 120, haulTimeMin: 90, climate: 'Hot-dry', appTemp: [20, 45], method: 'Pump', standardClass: 'IS 9103' },
+  useCaseConfidence: { concreteGrade: 0.85, cementType: 0.7, wcRatio: 0.66, dosagePct: 0.78, slumpRetentionMin: 0.84, haulTimeMin: 0.8, climate: 0.8, appTemp: 0.82, method: 0.9, standardClass: 0.9 },
   guided: [
     { id: 'haul', q: 'How long is the truck on the road?', picture: 'Truck', answer: 1, options: [
-      { label: 'Under 30 min', icon: 'Zap', sets: { timeToTrafficH: 0.5 } },
-      { label: '1–2 hours', icon: 'Truck', sets: { timeToTrafficH: 2 } },
+      { label: 'Under 30 min', icon: 'Zap', sets: { haulTimeMin: 30, slumpRetentionMin: 45 } },
+      { label: '1–2 hours', icon: 'Truck', sets: { haulTimeMin: 90, slumpRetentionMin: 120 } },
     ] },
     COMMON_GUIDED[1],
   ],
@@ -200,15 +177,22 @@ export const PCE: Scenario = {
 };
 
 export const GYPSUM: Scenario = {
-  id: 'gypsum', label: 'Gypsum plaster', chip: 'Gypsum plaster',
-  keywords: ['gypsum', 'plaster', 'putty', 'skim', 'pop'],
+  id: 'gypsum', label: 'Gypsum plaster', chip: 'Gypsum plaster', example: 'Machine-applied gypsum plaster for interior block walls',
+  keywords: ['gypsum', 'plaster of paris', 'pop plaster', 'plaster'],
   projectName: 'Gypsum plaster — Interior machine-applied', codePrefix: 'HX-GP',
   docType: 'Technical Data Sheet', productGuess: 'Lightweight gypsum plaster (machine-applied)',
   categoryId: 'plaster', subcategoryId: 'pl-gypsum', chemistry: ['cementitious'], form: 'powder',
   standard: 'IS 2547 / EN 13279-1 B4/50/2', standardAlt: 'EN 13279-1',
-  useCase: { substrate: 'Block masonry', surfaces: ['Wall'], materialType: 'Interior plaster 10–15 mm', size: { w: 0, h: 0, t: 12 }, exposure: 'interior', climate: 'Composite', appTemp: [5, 35], load: 'None', method: 'Spray', timeToGroutH: 0, timeToTrafficH: 0, standardClass: 'EN 13279-1 B4/50/2' },
-  useCaseConfidence: { substrate: 0.88, surfaces: 0.95, materialType: 0.8, exposure: 0.96, climate: 0.66, method: 0.84, standardClass: 0.85 },
-  guided: [COMMON_GUIDED[1], COMMON_GUIDED[3]],
+  useCase: { substrate: 'Block masonry', surfaces: ['Wall'], thicknessMm: 12, coats: 1, finish: 'Paint-ready smooth', coverageKgM2: 9.5, exposure: 'interior', climate: 'Composite', appTemp: [5, 35], method: 'Spray', standardClass: 'EN 13279-1 B4/50/2' },
+  useCaseConfidence: { substrate: 0.88, surfaces: 0.95, thicknessMm: 0.8, coats: 0.74, finish: 0.82, coverageKgM2: 0.7, exposure: 0.96, climate: 0.66, appTemp: 0.78, method: 0.84, standardClass: 0.85 },
+  guided: [
+    COMMON_GUIDED[1],
+    { id: 'finish', q: 'What goes on the wall after?', picture: 'PaintRoller', answer: 0, options: [
+      { label: 'Paint', icon: 'PaintRoller', sets: { finish: 'Paint-ready smooth' } },
+      { label: 'Wallpaper or texture', icon: 'Brush', sets: { finish: 'Textured' } },
+      { label: 'Tiles', icon: 'LayoutGrid', sets: { finish: 'Tile-ready' } },
+    ] },
+  ],
   benchmarks: [bench('bm-gp', 'Benchmark G', 'pl-gypsum', 'EN 13279-1 B4', 14, [['setting-time', 110, 'min', 'TDS'], ['compressive', 4.5, 'N/mm²', 'TDS'], ['flexural', 2.2, 'N/mm²', 'TDS'], ['pull-off', 0.3, 'N/mm²', 'TDS'], ['coverage', 9.5, 'kg/m²', 'TDS']])],
   targets: [
     { propertyId: 'setting-time', operator: 'between', value: [90, 150], priority: 'must', bench: 110, confidence: 0.88 },
@@ -247,14 +231,15 @@ export const GYPSUM: Scenario = {
 
 export const EPOXY_GROUT: Scenario = {
   id: 'epoxy', label: 'Epoxy grout', chip: 'Epoxy grout · RG',
-  keywords: ['epoxy', 'grout', 'stain', 'kitchen', 'pool grout', 'rg'],
+  example: 'Stain-proof epoxy grout for a commercial kitchen floor',
+  keywords: ['epoxy', 'epoxy grout', 'stain', 'kitchen', 'pool grout', 'rg'],
   projectName: 'Epoxy grout — Commercial kitchens', codePrefix: 'HX-EG',
   docType: 'Technical Data Sheet', productGuess: '3-component epoxy tile grout',
   categoryId: 'epoxy-grouts', subcategoryId: 'eg-rg', chemistry: ['epoxy'], form: '2-component',
   standard: 'EN 13888 RG / ISO 13007-3 RG', standardAlt: 'ISO 13007-3 RG',
-  useCase: { substrate: 'Existing tiles', surfaces: ['Floor', 'Wet area'], materialType: 'Vitrified', size: { w: 600, h: 600, t: 9 }, exposure: 'interior', climate: 'Hot-humid', appTemp: [15, 35], load: 'Heavy foot', method: 'Notched trowel', timeToGroutH: 0, timeToTrafficH: 24, standardClass: 'EN 13888 RG' },
-  useCaseConfidence: { substrate: 0.8, surfaces: 0.92, materialType: 0.86, exposure: 0.95, load: 0.9, method: 0.7, standardClass: 0.92 },
-  guided: [COMMON_GUIDED[0], COMMON_GUIDED[2], COMMON_GUIDED[3]],
+  useCase: { surfaces: ['Floor', 'Wet area'], materialType: 'Vitrified', jointWidthMm: 3, exposure: 'interior', climate: 'Hot-humid', appTemp: [15, 35], chemicalExposure: 'Kitchen acids / fats', colour: 'Pigmented', load: 'Heavy foot', method: 'Rubber float', timeToTrafficH: 24, standardClass: 'EN 13888 RG' },
+  useCaseConfidence: { surfaces: 0.92, materialType: 0.86, jointWidthMm: 0.72, exposure: 0.95, chemicalExposure: 0.88, colour: 0.6, load: 0.9, method: 0.7, timeToTrafficH: 0.74, standardClass: 0.92 },
+  guided: [COMMON_GUIDED[0], COMMON_GUIDED[2], speedQuestion('timeToTrafficH')],
   benchmarks: [bench('bm-eg', 'Benchmark E', 'eg-rg', 'EN 13888 RG', 380, [['compressive', 52, 'N/mm²', 'TDS'], ['flexural', 32, 'N/mm²', 'TDS'], ['water-absorption', 0.08, '%', 'TDS'], ['pot-life', 45, 'h', 'TDS'], ['chem-resistance', 'class A', 'class', 'TDS']])],
   targets: [
     { propertyId: 'compressive', operator: '>=', value: 45, priority: 'must', std: '≥ 45', stdMin: 45, bench: 52, confidence: 0.93 },

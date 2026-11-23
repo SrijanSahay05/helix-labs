@@ -13,7 +13,7 @@ import { targetText } from '@/lib/format';
 import { useUI } from '@/store/ui';
 import type { IntakeStep } from '@/store/project';
 import type { UseCase } from '@/types';
-import { useDraft } from '../useDraft';
+import { draftUseCaseKeys, useDraft } from '../useDraft';
 import { phraseToStep } from './PreviewSummary';
 import { AgentTag } from '@/components/agents/AgentTag';
 
@@ -62,7 +62,7 @@ export function BriefReview({ onJump, onStart }: { onJump: (s: IntakeStep) => vo
   const cat = findCategory(d.categoryId);
   const sub = findSubcategory(d.subcategoryId)?.sub;
   const lows = useLowConfidence();
-  const ucKeys = (Object.keys(d.useCase) as (keyof UseCase)[]).filter((k) => d.useCase[k] !== undefined);
+  const ucKeys = draftUseCaseKeys(d);
 
   const H = ({ children, step }: { children: string; step: IntakeStep }) => (
     <div className="mb-2 mt-6 flex items-center justify-between border-b border-line pb-1">

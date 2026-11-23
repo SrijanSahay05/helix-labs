@@ -12,7 +12,6 @@ import { SourceTypeTag } from '@/components/ai/CitationChip';
 import { Drawer } from '@/components/ui/primitives';
 import { Button } from '@/components/ui/Button';
 import { StateFrame } from '@/components/ui/StateFrame';
-import { Tag } from '@/components/ui/Pill';
 import { useStageRun } from '@/agent/useAgentRun';
 import { LIT_STEPS, uploadSourceScript } from '@/agent/scripts/stages';
 import { runAgent } from '@/agent/engine';
@@ -105,7 +104,6 @@ export function StageLiterature({ p }: { p: Project }) {
           <div className="flex items-center gap-1.5">
             {c.row.original.pinned && <Pin size={11} className="shrink-0 text-accent" />}
             <span className="line-clamp-2 min-w-[240px]">{c.getValue()}</span>
-            <Tag className="shrink-0">Demo</Tag>
           </div>
         ),
       }),
@@ -272,7 +270,6 @@ export function StageLiterature({ p }: { p: Project }) {
                 </table>
               </div>
             )}
-            <p className="text-2xs text-ink3">Demo source — titles are generic placeholders, not real publications.</p>
           </div>
         )}
       </Drawer>

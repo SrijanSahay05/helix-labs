@@ -5,15 +5,14 @@ import { AIField } from '@/components/ai/AIField';
 import { Chip, Select } from '@/components/ui/primitives';
 import { Icon } from '@/components/ui/Icon';
 import { AgentBot } from '@/components/agents/AgentBot';
-import { CLIMATES, LOADS, MATERIAL_TYPES, METHODS, SUBSTRATES, SURFACES } from '@/data/useCaseOptions';
-import { STANDARD_CLASSES } from '@/data/standards';
+import { FIELDS } from '@/data/useCaseProfiles';
 import { USE_CASE_LABEL } from '@/data/copy';
 import { SCENARIO } from '@/data/scenarios';
 import { useCaseDisplay } from '@/agent/scripts/intake';
 import { useMode } from '@/lib/useModeText';
 import { cn } from '@/lib/cn';
 import type { UseCase } from '@/types';
-import { acceptMeta, useDraft, userSet } from '../useDraft';
+import { acceptMeta, draftProfile, draftUseCaseKeys, useDraft, userSet } from '../useDraft';
 
 const L = (k: keyof UseCase, mode: 'scientist' | 'non-scientist') => USE_CASE_LABEL[k]?.[mode] ?? k;
 
@@ -41,77 +40,73 @@ function RangeInput({ value, onChange, min, max, unit }: { value: [number, numbe
   );
 }
 
-function ScientistFields() {
-  const d = useDraft();
-  const uc = d.useCase;
-  const mode = useMode();
-  const f = (k: keyof UseCase) => ({
-    path: `useCase.${k}`,
-    label: L(k, mode),
-    meta: d.meta[`useCase.${k}`],
-    display: uc[k] !== undefined ? useCaseDisplay(k, uc[k]) : undefined,
-    pending: uc[k] === undefined && d.runId !== undefined && !d.done.usecase,
-    onAccept: () => acceptMeta(`useCase.${k}`),
-  });
-  const set = (k: keyof UseCase, v: unknown) => userSet(`useCase.${k}`, v, L(k, 'scientist'));
-  return (
-    <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
-      <AIField {...f('substrate')}>
-        <Select value={uc.substrate ?? ''} onChange={(v) => set('substrate', v)} options={['', ...SUBSTRATES]} />
-      </AIField>
-      <AIField {...f('surfaces')}>
+function FieldInput({ k, value, set }: { k: keyof UseCase; value: unknown; set: (v: unknown) => void }) {
+  const spec = FIELDS[k];
+  switch (spec.kind) {
+    case 'select':
+      return <Select value={(value as string) ?? ''} onChange={set} options={['', ...spec.options]} />;
+    case 'chips': {
+      const cur = (value as string[] | undefined) ?? [];
+      return (
         <div className="flex flex-wrap gap-1.5">
-          {SURFACES.map((s) => (
-            <Chip key={s} active={uc.surfaces?.includes(s)} onClick={() => set('surfaces', uc.surfaces?.includes(s) ? uc.surfaces.filter((x) => x !== s) : [...(uc.surfaces ?? []), s])}>
+          {spec.options.map((s) => (
+            <Chip key={s} active={cur.includes(s)} onClick={() => set(cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s])}>
               {s}
             </Chip>
           ))}
         </div>
-      </AIField>
-      <AIField {...f('materialType')}>
-        <Select value={uc.materialType ?? ''} onChange={(v) => set('materialType', v)} options={['', ...MATERIAL_TYPES]} />
-      </AIField>
-      <AIField {...f('size')}>
-        <div className="flex items-center gap-1.5">
-          <NumberInput value={uc.size?.w} onChange={(v) => set('size', { ...(uc.size ?? { w: 0, h: 0, t: 0 }), w: v })} suffix="W" />
-          <span className="text-ink3">×</span>
-          <NumberInput value={uc.size?.h} onChange={(v) => set('size', { ...(uc.size ?? { w: 0, h: 0, t: 0 }), h: v })} suffix="H" />
-          <span className="text-ink3">×</span>
-          <NumberInput value={uc.size?.t} onChange={(v) => set('size', { ...(uc.size ?? { w: 0, h: 0, t: 0 }), t: v })} suffix="mm" />
-        </div>
-      </AIField>
-      <AIField {...f('exposure')}>
+      );
+    }
+    case 'toggle':
+      return (
         <div className="inline-flex rounded-md border border-line bg-surface2 p-0.5">
-          {(['interior', 'exterior'] as const).map((x) => (
-            <button key={x} onClick={() => set('exposure', x)} className={cn('h-7 rounded px-4 text-xs font-medium capitalize', uc.exposure === x ? 'bg-surface text-ink shadow-card' : 'text-ink2')}>
+          {spec.options.map((x) => (
+            <button key={x} onClick={() => set(x)} className={cn('h-7 rounded px-4 text-xs font-medium capitalize', value === x ? 'bg-surface text-ink shadow-card' : 'text-ink2')}>
               {x}
             </button>
           ))}
         </div>
-      </AIField>
-      <AIField {...f('climate')}>
-        <Select value={uc.climate ?? ''} onChange={(v) => set('climate', v)} options={['', ...CLIMATES]} />
-      </AIField>
-      <AIField {...f('appTemp')}>
-        <RangeInput value={uc.appTemp ?? [10, 35]} onChange={(v) => set('appTemp', v)} min={-10} max={50} unit="°C" />
-      </AIField>
-      <AIField {...f('load')}>
-        <Select value={uc.load ?? ''} onChange={(v) => set('load', v)} options={['', ...LOADS]} />
-      </AIField>
-      <AIField {...f('method')}>
-        <Select value={uc.method ?? ''} onChange={(v) => set('method', v)} options={['', ...METHODS]} />
-      </AIField>
-      <div className="grid grid-cols-2 gap-3">
-        <AIField {...f('timeToGroutH')}>
-          <NumberInput value={uc.timeToGroutH} onChange={(v) => set('timeToGroutH', v)} suffix="h" />
+      );
+    case 'range':
+      return <RangeInput value={(value as [number, number]) ?? [spec.min, spec.max]} onChange={set} min={spec.min} max={spec.max} unit={spec.unit} />;
+    case 'size': {
+      const sz = (value as UseCase['size']) ?? { w: 0, h: 0, t: 0 };
+      return (
+        <div className="flex items-center gap-1.5">
+          <NumberInput value={sz.w} onChange={(v) => set({ ...sz, w: v })} suffix="W" />
+          <span className="text-ink3">×</span>
+          <NumberInput value={sz.h} onChange={(v) => set({ ...sz, h: v })} suffix="H" />
+          <span className="text-ink3">×</span>
+          <NumberInput value={sz.t} onChange={(v) => set({ ...sz, t: v })} suffix="mm" />
+        </div>
+      );
+    }
+    case 'number':
+      return <NumberInput value={value as number | undefined} onChange={set} suffix={spec.unit} />;
+  }
+}
+
+function ScientistFields() {
+  const d = useDraft();
+  const uc = d.useCase;
+  const mode = useMode();
+  const fields = draftProfile(d).fields;
+  return (
+    <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
+      {fields.map((k) => (
+        <AIField
+          key={k}
+          path={`useCase.${k}`}
+          label={L(k, mode)}
+          meta={d.meta[`useCase.${k}`]}
+          display={uc[k] !== undefined ? useCaseDisplay(k, uc[k]) : undefined}
+          pending={uc[k] === undefined && d.runId !== undefined && !d.done.usecase}
+          onAccept={() => acceptMeta(`useCase.${k}`)}
+          className={k === 'standardClass' ? 'md:col-span-2' : undefined}
+        >
+          <FieldInput k={k} value={uc[k]} set={(v) => userSet(`useCase.${k}`, v, L(k, 'scientist'))} />
         </AIField>
-        <AIField {...f('timeToTrafficH')}>
-          <NumberInput value={uc.timeToTrafficH} onChange={(v) => set('timeToTrafficH', v)} suffix="h" />
-        </AIField>
-      </div>
-      <AIField {...f('standardClass')} className="md:col-span-2">
-        <Select value={uc.standardClass ?? ''} onChange={(v) => set('standardClass', v)} options={['', ...STANDARD_CLASSES]} />
-      </AIField>
+      ))}
     </div>
   );
 }
@@ -217,7 +212,7 @@ function GuidedQuestions() {
 export function UnderstoodTable() {
   const d = useDraft();
   const [open, setOpen] = useState(false);
-  const keys = (Object.keys(d.useCase) as (keyof UseCase)[]).filter((k) => d.useCase[k] !== undefined);
+  const keys = draftUseCaseKeys(d);
   return (
     <div className="card overflow-hidden">
       <button onClick={() => setOpen((o) => !o)} className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium">

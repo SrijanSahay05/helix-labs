@@ -11,7 +11,7 @@ import { NovyteShowcase, NovyteToggle } from './NovyteShowcase';
 import { NOVYTE } from './novyte.config';
 import { LIT_COUNT, PHASE, STEP_INDEX, litCounts, seg } from './script';
 import { useChoices, useInteract, usePlayback, useProg, useReduced } from './store';
-import { Counter, DemoTag, ORANGE, TypeTag, useScientist, useTyping } from './shared';
+import { Counter, ORANGE, TypeTag, useScientist, useTyping } from './shared';
 
 function useLitCounters(data: ResearchData) {
   const step = usePlayback((s) => s.step);
@@ -133,7 +133,6 @@ function AllSources({ data, open, onClose }: { data: ResearchData; open: boolean
           <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink3" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search title, finding, cluster or [ref]" className="input h-9 pl-8 text-xs" />
         </label>
-        <DemoTag />
       </div>
       <div className="table-wrap">
         <table className="w-full text-xs">
@@ -191,11 +190,10 @@ function SourceModal({ data }: { data: ResearchData }) {
           <div className="flex items-center gap-2">
             <TypeTag type={src.type} />
             <span className="mono text-xs text-ink3">{src.year}</span>
-            <DemoTag />
           </div>
           <div className="font-semibold leading-6 text-ink">{src.title}</div>
           <p className="leading-6 text-ink2">{src.snippet ?? src.finding}</p>
-          <p className="rounded-md bg-surface2 px-3 py-2 text-xs text-ink2">Demo data — the full text opens in the Literature stage once the formulation starts.</p>
+          <p className="rounded-md bg-surface2 px-3 py-2 text-xs text-ink2">The full text opens in the Literature stage once the formulation starts.</p>
           <SourceActions src={src} />
         </div>
       )}

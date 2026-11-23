@@ -1,6 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { CHEMISTRIES, FORMS, findCategory } from '@/data/categories';
 import { PROP } from '@/data/properties';
+import { scenarioForSub } from '@/data/scenarios';
+import { useProjects } from '@/store/project';
+import { useUI } from '@/store/ui';
 import { AIField, useFillPhase } from '@/components/ai/AIField';
 import { Chip } from '@/components/ui/primitives';
 import { Tag } from '@/components/ui/Pill';
@@ -73,6 +76,9 @@ export function StepSubcategory() {
                     onClick={() => {
                       userSet('subcategoryId', s.id, 'Subcategory');
                       userSet('standard', s.defaultStandard, 'Standard');
+                      // a hand-picked subcategory runs its own demo, unless one is pinned in Settings
+                      const next = scenarioForSub(s.id);
+                      if (next && useUI.getState().demoScenario === 'auto') useProjects.getState().patchDraft({ scenarioId: next.id });
                     }}
                     className={cn('cursor-pointer transition-colors hover:bg-surface2', sel && 'bg-accent-soft', sel && phase === 'filling' && 'ai-shimmer')}
                   >

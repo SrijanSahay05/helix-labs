@@ -1,3 +1,4 @@
+import type { UseCase } from '@/types';
 import type { GuidedQuestion } from './types';
 
 /** Guided questions shared by most scenarios; answers map to UseCase fields. */
@@ -24,3 +25,10 @@ export const COMMON_GUIDED: GuidedQuestion[] = [
     { label: 'No rush', icon: 'Hourglass', sets: { timeToGroutH: 48, timeToTrafficH: 0 } },
   ] },
 ];
+
+/** "How soon must it be ready?" for products whose readiness is one field (traffic, service…), not tile grouting. */
+export const speedQuestion = (key: keyof UseCase): GuidedQuestion => ({ id: 'speed', q: 'How soon must it be ready?', picture: 'Timer', answer: 1, options: [
+  { label: 'Same day', icon: 'Zap', sets: { [key]: 6 } },
+  { label: 'Next day', icon: 'CalendarClock', sets: { [key]: 24 } },
+  { label: 'No rush', icon: 'Hourglass', sets: { [key]: 72 } },
+] });

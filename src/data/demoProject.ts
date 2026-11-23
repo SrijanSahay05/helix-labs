@@ -108,7 +108,8 @@ export const TILE_SCENARIO: Scenario = {
   id: 'tile',
   label: 'Exterior tile adhesive',
   chip: 'Tile adhesive · C2TE S1',
-  keywords: ['tile', 'adhesive', 'c2te', 'c2', 'vitrified', 'facade', 's1'],
+  example: 'Adhesive for 1200 × 600 vitrified tiles on an exterior facade',
+  keywords: ['tile adhesive', 'tiling adhesive', 'tile fixing', 'c2te', 'c2', 'vitrified', 's1', 'large format', 'large-format'],
   projectName: 'Exterior tile adhesive — Large format',
   codePrefix: 'HX-TA',
   docType: 'Technical Data Sheet',
@@ -221,6 +222,10 @@ export const TILE_SCENARIO: Scenario = {
   sources: TILE_SOURCES,
   trials: TILE_TRIALS_ITER1,
   trialsIter2: TILE_TRIALS_ITER2,
+  iter2: {
+    base: 'T3',
+    summary: 'T3 meets 12/14 targets. Heat-ageing adhesion is borderline (0.94 vs ≥ 1.0 N/mm²). Proposed: raise RDP 4.0 → 4.6 %, reduce Ca-formate 0.8 → 0.6 % [1][6]. T6 pushes RDP to 4.8 % as a safety margin.',
+  },
   measured: ['adh-initial', 'adh-water', 'adh-heat', 'adh-ft', 'open-time', 'slip', 'transverse-def'],
   resultMeans: {
     'adh-initial': { T1: 1.12, T2: 1.28, T3: 1.34, T4: 1.41, T5: 1.38, T6: 1.4 },

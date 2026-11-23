@@ -53,7 +53,6 @@ export function TypeTag({ type }: { type: RType }) {
   );
 }
 
-export const DemoTag = () => <span className="inline-flex h-[18px] items-center rounded-[5px] bg-surface2 px-1.5 text-[10px] font-semibold text-ink3">Demo data</span>;
 
 /** orange is reserved for top sources / best highlights */
 export const ORANGE = '#F59E0B';

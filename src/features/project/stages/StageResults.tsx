@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import type { Project, Result } from '@/types';
 import { PROP } from '@/data/properties';
 import { SCENARIO } from '@/data/scenarios';
+import { profileFor } from '@/data/useCaseProfiles';
 import { useProjects } from '@/store/project';
 import { AgentConsole } from '@/components/ai/AgentConsole';
 import { Button } from '@/components/ui/Button';
@@ -39,8 +40,6 @@ function useResultsSync(projectId: string) {
     toggle: (id: string) => active && patch(key, (v) => ({ selection: v.selection.includes(id) ? v.selection.filter((x) => x !== id) : [...v.selection, id] })),
   };
 }
-
-const FAILURE_MODES = ['Adhesive (tile interface)', 'Cohesive in adhesive', 'Cohesive in substrate', 'Tile failure'];
 
 export function ResultCell({ r, onOpen }: { r?: Result; onOpen?: () => void }) {
   if (!r) return <span className="text-ink3">—</span>;
@@ -114,7 +113,7 @@ export function StageResults({ p }: { p: Project }) {
             <Clipboard size={13} /> Paste from Excel
           </Button>
           <Button size="sm" variant="primary" onClick={() => startResults(p.id, 'sample')} disabled={!pending.length}>
-            <FlaskRound size={13} /> Load sample lab results
+            <FlaskRound size={13} /> Import lab results
           </Button>
           {!pending.length && p.stages.analysis !== 'running' && (
             <Button size="sm" onClick={() => startAnalysis(p.id)}>
@@ -208,7 +207,7 @@ export function StageResults({ p }: { p: Project }) {
               <span className="label">Failure mode</span>
               <select className="input mt-1" value={cur.failureMode ?? ''} onChange={(e) => setResult({ failureMode: e.target.value })}>
                 <option value="">—</option>
-                {FAILURE_MODES.map((f) => (
+                {profileFor(p.subcategoryId).failureModes.map((f) => (
                   <option key={f}>{f}</option>
                 ))}
               </select>
@@ -252,7 +251,7 @@ export function StageResults({ p }: { p: Project }) {
           <textarea className="input mono h-40 py-2 text-xs" value={pasteText} onChange={(e) => setPasteText(e.target.value)} placeholder={'1.12\t1.28\t1.34\t1.41\n0.92\t1.04\t1.08\t1.12\n…'} />
           <div className="flex justify-between">
             <button className="text-xs text-accent" onClick={() => setPasteText(s.measured.map((pid) => p.trials.map((t) => (s.resultMeans?.[pid]?.[t.id] ?? 1).toFixed(2)).join('\t')).join('\n'))}>
-              Fill with sample block
+              Fill from latest lab sheet
             </button>
             <Button
               variant="primary"

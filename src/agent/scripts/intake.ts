@@ -5,6 +5,7 @@ import { findSubcategory, GROUPS } from '@/data/categories';
 import { PROP } from '@/data/properties';
 import { MAT } from '@/data/rawMaterials';
 import { USE_CASE_LABEL } from '@/data/copy';
+import { FIELDS, profileFor } from '@/data/useCaseProfiles';
 import { buildTargets } from '@/lib/simulate';
 import { targetText } from '@/lib/format';
 import { useProjects, type IntakeStep } from '@/store/project';
@@ -20,21 +21,20 @@ export function suggestMode(input: string, kind: 'link' | 'pdf' | 'text'): { mod
 }
 
 export function useCaseDisplay(k: keyof UseCase, v: unknown): string {
+  const f = FIELDS[k];
   if (k === 'size') {
-    const s = v as UseCase['size'];
+    const s = v as NonNullable<UseCase['size']>;
     return s.w ? `${s.w} × ${s.h} × ${s.t} mm` : `${s.t} mm thick`;
   }
-  if (k === 'appTemp') {
+  if (f?.kind === 'range') {
     const [a, b] = v as [number, number];
-    return `${a}–${b} °C`;
+    return `${a}–${b} ${f.unit}`;
   }
-  if (k === 'timeToGroutH' || k === 'timeToTrafficH') return (v as number) ? `${v} h` : 'n/a';
+  if (f?.kind === 'number' && f.unit) return f.unit === 'h' && !v ? 'n/a' : `${v} ${f.unit}`;
   if (Array.isArray(v)) return v.join(', ');
   if (k === 'exposure') return v === 'exterior' ? 'Exterior' : 'Interior';
   return String(v);
 }
-
-const USE_CASE_ORDER: (keyof UseCase)[] = ['substrate', 'surfaces', 'materialType', 'size', 'exposure', 'climate', 'appTemp', 'load', 'method', 'timeToGroutH', 'timeToTrafficH', 'standardClass'];
 
 const markDone = (steps: IntakeStep[]): AgentEvent => ({
   t: 'effect',
@@ -83,10 +83,9 @@ function subcategoryFills(s: Scenario): AgentEvent[] {
 
 function useCaseFills(s: Scenario, domain?: string): AgentEvent[] {
   const ev: AgentEvent[] = [{ t: 'tool', name: 'infer_use_case', args: domain ? `source="${domain}"` : 'request', result: `${Object.keys(s.useCase).length} fields`, ms: 800 }];
-  for (const k of USE_CASE_ORDER) {
+  for (const k of profileFor(s.subcategoryId).fields) {
     const v = s.useCase[k];
     if (v === undefined) continue;
-    if (k === 'size' && !(v as UseCase['size']).t) continue;
     const conf = s.useCaseConfidence[k] ?? 0.8;
     ev.push({
       t: 'fill',

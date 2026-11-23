@@ -1,7 +1,8 @@
 import type { Pathway, Proposal, Result, StandardFamily, TargetRow, Trial } from '@/types';
 import type { Scenario } from '@/data/scenarios/types';
+import { profileFor } from '@/data/useCaseProfiles';
 import { methodFor, PROP } from '@/data/properties';
-import { balanceTo100, midpointRecipe } from './cost';
+import { balanceTo100, costPerKg, midpointRecipe } from './cost';
 import { statusFor } from './status';
 import { hashString, seeded } from './motion';
 
@@ -41,8 +42,6 @@ export function buildTrials(s: Scenario, pathway: Pathway): Trial[] {
   });
 }
 
-const FAILURE_MODES = ['Adhesive (tile interface)', 'Cohesive in adhesive', 'Cohesive in substrate', 'Tile failure'];
-
 function readingsAround(mean: number, rnd: () => number, n = 5): number[] {
   const spread = Math.abs(mean) * 0.06 || 0.02;
   const vals = Array.from({ length: n - 1 }, () => r2(mean + (rnd() - 0.5) * 2 * spread));
@@ -60,7 +59,10 @@ function genericMean(row: TargetRow, trialIdx: number, iteration: number, rnd: (
     return r2(c + half * (1 - quality) * 4);
   }
   const t = Array.isArray(row.value) ? row.value[0] : row.value;
-  return r2(row.operator === '<=' ? t / quality : t * quality);
+  // quality > 1 means better: further below a "≤" target, further above a "≥" one, for negative targets too (cold flex ≤ −5 °C)
+  const up = t >= 0 ? t * quality : t / quality;
+  const down = t >= 0 ? t / quality : t * quality;
+  return r2(row.operator === '<=' ? down : up);
 }
 
 const AGED = new Set(['adh-heat', 'adh-ft', 'self-healing', 'shrinkage', 'freeze-thaw']);
@@ -68,6 +70,7 @@ const AGED = new Set(['adh-heat', 'adh-ft', 'self-healing', 'shrinkage', 'freeze
 /** Lab results for trials. Tile scenario uses the hand-seeded means. */
 export function buildResults(s: Scenario, trials: Trial[], targets: TargetRow[], today = new Date()): Result[] {
   const out: Result[] = [];
+  const modes = profileFor(s.subcategoryId).failureModes;
   for (const propertyId of s.measured) {
     const row = targets.find((t) => t.propertyId === propertyId);
     if (!row) continue;
@@ -83,7 +86,7 @@ export function buildResults(s: Scenario, trials: Trial[], targets: TargetRow[],
         propertyId,
         readings: readingsAround(mean, rnd),
         mean,
-        failureMode: status === 'pass' ? FAILURE_MODES[1 + Math.floor(rnd() * 2)] : FAILURE_MODES[0],
+        failureMode: status === 'pass' ? modes[1 + Math.floor(rnd() * 2)] : modes[0],
         testDate: d.toISOString().slice(0, 10),
         status,
       });
@@ -124,10 +127,10 @@ export function bestTrial(trials: Trial[], results: Result[]): Trial | undefined
 }
 
 /** Analysis: propose the next iteration. */
-export function proposeNext(s: Scenario, trials: Trial[], results: Result[], iteration: number): Proposal {
+export function proposeNext(s: Scenario, trials: Trial[], results: Result[], iteration: number, costCeiling = s.constraints.costCeiling): Proposal {
   const nextIdx = trials.length + 1;
-  if (s.trialsIter2 && iteration === 1 && trials.some((t) => t.id === 'T3')) {
-    const base = trials.find((t) => t.id === 'T3')!;
+  if (s.trialsIter2 && s.iter2 && iteration === 1 && trials.some((t) => t.id === s.iter2!.base)) {
+    const base = trials.find((t) => t.id === s.iter2!.base)!;
     const changes = s.trialsIter2.flatMap((t) =>
       Object.entries(t.recipe)
         .filter(([m, v]) => Math.abs((base.recipe[m] ?? 0) - v) > 1e-9)
@@ -136,19 +139,30 @@ export function proposeNext(s: Scenario, trials: Trial[], results: Result[], ite
     return {
       trials: s.trialsIter2.map((t) => ({ ...t, recipe: { ...t.recipe } })),
       changes,
-      summary:
-        'T3 meets 12/14 targets. Heat-ageing adhesion is borderline (0.94 vs ≥ 1.0 N/mm²). Proposed: raise RDP 4.0 → 4.6 %, reduce Ca-formate 0.8 → 0.6 % [1][6]. T6 pushes RDP to 4.8 % as a safety margin.',
+      summary: s.iter2.summary,
     };
   }
-  const best = bestTrial(trials, results) ?? trials[trials.length - 1];
+  // analysis only closes a trial under the cost ceiling: build on the best affordable trial (else the cheapest)
+  // and step the lever back until the new trial fits, so iterations converge instead of drifting over budget
+  const affordable = costCeiling === undefined ? trials : trials.filter((t) => costPerKg(t.recipe) <= costCeiling);
+  const cheapest = [...trials].sort((a, b) => costPerKg(a.recipe) - costPerKg(b.recipe))[0];
+  const best = (affordable.length ? bestTrial(affordable, results) : cheapest) ?? trials[trials.length - 1];
   const lever = s.leverMaterial in best.recipe ? s.leverMaterial : Object.keys(best.recipe).find((k) => k !== s.balanceMaterial)!;
   const from = best.recipe[lever];
+  const recipeAt = (f: number) => balanceTo100({ ...best.recipe, [lever]: r2(from * f) }, s.balanceMaterial);
+  const fit = (f: number) => {
+    while (costCeiling !== undefined && f > 0.5 && costPerKg(recipeAt(f)) > costCeiling) f = r2(f - 0.01);
+    return f;
+  };
   const mk = (id: string, f: number): Trial => {
-    const recipe = balanceTo100({ ...best.recipe, [lever]: r2(from * f) }, s.balanceMaterial);
+    const recipe = recipeAt(f);
     return { id, iteration: iteration + 1, recipe, meta: Object.fromEntries(Object.keys(recipe).map((m) => [m, { by: 'helix' as const, confidence: 0.84 }])) };
   };
-  const a = mk(`T${nextIdx}`, 1.15);
-  const b = mk(`T${nextIdx + 1}`, 1.22);
+  const fa = fit(1.15);
+  const fb = fit(1.22);
+  const a = mk(`T${nextIdx}`, fa);
+  const b = mk(`T${nextIdx + 1}`, fb === fa ? r2(fa - 0.03) : fb);
+  const capped = fa < 1.15;
   const sc = trialScore(best.id, results);
   return {
     trials: [a, b],
@@ -157,6 +171,8 @@ export function proposeNext(s: Scenario, trials: Trial[], results: Result[], ite
         .filter(([m, v]) => Math.abs((best.recipe[m] ?? 0) - v) > 1e-9)
         .map(([m, v]) => ({ trialId: t.id, materialId: m, from: best.recipe[m] ?? 0, to: v })),
     ),
-    summary: `${best.id} passes ${sc.pass}/${sc.total} measured targets. Raising the lever material by 15–22 % should close the remaining gaps; balance adjusted to keep 100.00 %.`,
+    summary: capped
+      ? `${best.id} passes ${sc.pass}/${sc.total} measured targets. Adjusting the lever material only as far as the ₹ ${costCeiling}/kg cost ceiling allows; balance adjusted to keep 100.00 %.`
+      : `${best.id} passes ${sc.pass}/${sc.total} measured targets. Raising the lever material by 15–22 % should close the remaining gaps; balance adjusted to keep 100.00 %.`,
   };
 }

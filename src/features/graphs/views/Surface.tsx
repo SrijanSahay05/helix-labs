@@ -24,13 +24,12 @@ export function Surface({ ctx, act }: { ctx: VizCtx; act: VizAct }) {
   const { grid, trialZ, loading, error } = useGrid(ctx, { resultId: r, x, y });
   const last = useRef<Figure | null>(null);
   const def = ctx.def(r) as ResultDef;
-  const lowConf = ctx.fit && ((ctx.fit.cvR2 !== null && ctx.fit.cvR2 < 0.5) || ctx.fit.trainedOn < 8);
 
   const figure = useMemo(() => {
     if (!grid) return last.current;
     const th = ctx.theme;
     const sc = scaleFor(v.colorscale, def);
-    const base = lowConf ? 0.6 : 1;
+    const base = 1;
     const inside = dilate(grid.extrapolated.map((row) => row.map((e) => !e)));
     const z = grid.mean;
     const zIn = z.map((row, i) => row.map((val, j) => (inside[i][j] ? val : NaN)));
@@ -89,7 +88,7 @@ export function Surface({ ctx, act }: { ctx: VizCtx; act: VizAct }) {
     const fig: Figure = { data, layout: { ...baseLayoutFor(ctx), scene: scene(ctx, 'surface', x, y, r), uirevision: `${ctx.key}:surface` } };
     last.current = fig;
     return fig;
-  }, [grid, trialZ, ctx, x, y, r, v, def, lowConf]);
+  }, [grid, trialZ, ctx, x, y, r, v, def]);
 
   return (
     <>
@@ -109,7 +108,7 @@ export function Surface({ ctx, act }: { ctx: VizCtx; act: VizAct }) {
         />
       )}
       {(loading || error) && <FittingOverlay ctx={ctx} error={error} what="Fitting surface" />}
-      {!loading && grid && <ExtrapolatedNote lowConf={!!lowConf} />}
+      {!loading && grid && <ExtrapolatedNote />}
     </>
   );
 }
@@ -125,10 +124,9 @@ function baseLayoutFor(ctx: VizCtx) {
   };
 }
 
-export function ExtrapolatedNote({ lowConf }: { lowConf: boolean }) {
+export function ExtrapolatedNote() {
   return (
     <div className="pointer-events-none absolute bottom-2 left-2 flex flex-col gap-1 text-[10px] text-ink3">
-      {lowConf && <span className="rounded bg-[var(--borderline-soft)] px-1.5 py-0.5 font-semibold text-borderline">Model low confidence — shown at 60 % opacity</span>}
       <span className="rounded bg-surface/80 px-1.5 py-0.5">faded = extrapolated</span>
     </div>
   );

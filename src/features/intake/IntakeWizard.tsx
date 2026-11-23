@@ -8,6 +8,7 @@ import { useProjects, INTAKE_STEPS, type IntakeStep } from '@/store/project';
 import { useUI } from '@/store/ui';
 import { useTasks } from '@/store/tasks';
 import { routeScenario, SCENARIO } from '@/data/scenarios';
+import { pickProfile } from '@/data/useCaseProfiles';
 import { blankProject } from '@/data/projectFactory';
 import { runAgent, agent } from '@/agent/engine';
 import { magicStartScript, stepScript } from '@/agent/scripts/intake';
@@ -144,7 +145,7 @@ export function IntakeWizard() {
   /* Magic Start */
   const onMagic = (input: string, kind: 'link' | 'pdf' | 'text') => {
     resetDraft();
-    const s = routeScenario(input);
+    const s = routeScenario(input, useUI.getState().demoScenario);
     const domain = kind === 'link' ? (domainOf(input) ?? undefined) : kind === 'pdf' ? input : undefined;
     const runId = runAgent(magicStartScript(s, input, kind, domain, standards), { id: uid('intake'), onFill: fillDraft });
     patchDraft({ request: input, source: { kind, value: input, domain }, scenarioId: s.id, magic: 'running', runId });
@@ -228,7 +229,7 @@ export function IntakeWizard() {
       categoryId: d.categoryId ?? base.categoryId,
       subcategoryId: d.subcategoryId ?? base.subcategoryId,
       standard: d.standard ?? base.standard,
-      useCase: { ...base.useCase, ...d.useCase },
+      useCase: pickProfile({ ...base.useCase, ...d.useCase }, d.subcategoryId ?? base.subcategoryId),
       benchmarks: d.benchmarks.map((b) => b.id),
       targets: d.targets.length ? d.targets : base.targets,
       top3: d.top3.length ? d.top3 : base.top3,

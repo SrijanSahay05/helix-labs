@@ -22,7 +22,6 @@ export function Contour({ ctx, act, probe }: { ctx: VizCtx; act: VizAct; probe?:
   const range = useMemo(() => ({ x: xr, y: yr }), [xr, yr]);
   const { grid, feasible, loading, error } = useGrid(ctx, { resultId: r, x, y, range, feasible: v.overlays.feasible });
   const last = useRef<Figure | null>(null);
-  const lowConf = ctx.fit && ((ctx.fit.cvR2 !== null && ctx.fit.cvR2 < 0.5) || ctx.fit.trainedOn < 8);
 
   const figure = useMemo(() => {
     if (!grid) return last.current;
@@ -41,7 +40,7 @@ export function Contour({ ctx, act, probe }: { ctx: VizCtx; act: VizAct; probe?:
         colorscale: sc.colorscale,
         reversescale: sc.reversescale,
         ...(sc.cmid !== undefined ? { zmid: sc.cmid } : {}),
-        opacity: lowConf ? 0.6 : 1,
+        opacity: 1,
         contours: { coloring: 'heatmap', showlabels: true, labelfont: { family: MONO, size: 10, color: 'rgba(14,17,22,.75)' }, start: Math.floor(zmin / step) * step, end: Math.ceil(zmax / step) * step, size: step },
         line: { color: 'rgba(14,17,22,.35)', width: 0.8 },
         colorbar: colorbar(ctx, r),
@@ -146,7 +145,7 @@ export function Contour({ ctx, act, probe }: { ctx: VizCtx; act: VizAct; probe?:
     };
     last.current = fig;
     return fig;
-  }, [grid, feasible, ctx, x, y, r, v, def, xr, yr, probe, lowConf]);
+  }, [grid, feasible, ctx, x, y, r, v, def, xr, yr, probe]);
 
   return (
     <>
@@ -175,7 +174,7 @@ export function Contour({ ctx, act, probe }: { ctx: VizCtx; act: VizAct; probe?:
         </PlotHost>
       )}
       {(loading || error) && <FittingOverlay ctx={ctx} error={error} what="Fitting contours" />}
-      {!loading && grid && <ExtrapolatedNote lowConf={!!lowConf} />}
+      {!loading && grid && <ExtrapolatedNote />}
     </>
   );
 }

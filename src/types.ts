@@ -66,19 +66,72 @@ export interface TargetRow {
   meta: AIMeta;
 }
 
+/** Every field is optional: which ones a brief fills depends on the product (see src/data/useCaseProfiles.ts). */
 export interface UseCase {
-  substrate: string;
-  surfaces: string[];
-  materialType: string;
-  size: { w: number; h: number; t: number };
-  exposure: 'interior' | 'exterior';
-  climate: string;
-  appTemp: [number, number];
-  load: string;
-  method: string;
-  timeToGroutH: number;
-  timeToTrafficH: number;
+  substrate?: string;
+  surfaces?: string[];
+  exposure?: 'interior' | 'exterior';
+  climate?: string;
+  appTemp?: [number, number];
+  load?: string;
+  method?: string;
   standardClass?: string;
+  element?: string;
+  thicknessMm?: number;
+  timeToTrafficH?: number;
+  // tiles and grouts
+  materialType?: string;
+  size?: { w: number; h: number; t: number };
+  timeToGroutH?: number;
+  jointWidthMm?: number;
+  chemicalExposure?: string;
+  colour?: string;
+  // concrete and cement
+  concreteGrade?: string;
+  cementType?: string;
+  wcRatio?: number;
+  dosagePct?: [number, number];
+  slumpRetentionMin?: number;
+  haulTimeMin?: number;
+  millType?: string;
+  blaineTarget?: number;
+  clinkerFactor?: number;
+  dosageKgM3?: number;
+  formworkType?: string;
+  reuseCycles?: number;
+  // walls
+  coats?: number;
+  finish?: string;
+  coverageKgM2?: number;
+  // waterproofing, sealing, injection
+  waterExposure?: string;
+  crackMovementMm?: number;
+  uvExposure?: string;
+  potableContact?: string;
+  movementPct?: number;
+  substrate2?: string;
+  paintable?: string;
+  crackWidthMm?: number;
+  leakState?: string;
+  depthMm?: number;
+  // floors and repair
+  areaM2?: number;
+  substrateMoisturePct?: number;
+  timeToWalkH?: number;
+  flowClass?: string;
+  timeToServiceH?: number;
+  // structural
+  designLoadKN?: number;
+  substrateCondition?: string;
+  embedDepthMm?: number;
+  layers?: number;
+  // fire and tunnelling
+  fireRatingMin?: number;
+  sectionFactor?: number;
+  soilType?: string;
+  tbmDiameterM?: number;
+  fer?: number;
+  firPct?: number;
 }
 
 export interface Constraints {

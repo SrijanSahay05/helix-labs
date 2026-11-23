@@ -39,6 +39,8 @@ export interface Scenario {
   id: string;
   label: string;
   chip: string;
+  /** a Magic Start brief that routes to this scenario (tested) */
+  example: string;
   keywords: string[];
   projectName: string;
   codePrefix: string;
@@ -67,6 +69,10 @@ export interface Scenario {
   sources: Source[];
   trials?: Trial[];
   trialsIter2?: Trial[];
+  /** iteration 2: the iteration-1 trial it builds on and the analysis text that proposes it */
+  iter2?: { base: string; summary: string };
+  /** sources and lab data are hand-written from a research run: no generated sources, and Graphs show this project's own trials */
+  curated?: boolean;
   measured: string[];
   mixingProtocol: string[];
   testPlan: TestPlanRow[];
