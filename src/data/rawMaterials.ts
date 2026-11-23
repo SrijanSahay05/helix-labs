@@ -80,6 +80,13 @@ export const RAW_MATERIALS: RawMaterial[] = [
   M('coalescent', 'Coalescent (ester alcohol)', 'Film formation', 'Ester alcohol', 'Supplier Chem', 210, 400, 'approved'),
   M('tio2-disp', 'Titanium dioxide dispersion 60 %', 'Solar reflectance', 'Rutile', 'Supplier Colour', 260, 600, 'approved'),
   M('mineral-oil', 'Mineral base oil', 'Release film', 'Light paraffinic, 22 cSt', 'Supplier Oil', 75, 15000, 'approved'),
+  // masonry and walls (Phase 2 demos)
+  M('aea-powder', 'Powder air entrainer', 'Air / workability', 'Olefin sulphonate on carrier', 'Supplier Surfactant', 600, 300, 'approved'),
+  M('dolomite', 'Dolomite powder 25 µm', 'Filler', 'White, 25 µm', 'Supplier Min', 3.5, 30000, 'approved', ['caco3']),
+  M('talc', 'Talc 10 µm', 'Sanding / filler', 'Micronised', 'Supplier Min', 12, 4000, 'approved'),
+  M('hec', 'Hydroxyethyl cellulose', 'Thickener (paste)', '30,000 mPa·s', 'Supplier Cellulose', 400, 500, 'approved'),
+  M('sbr-latex', 'SBR latex 50 %', 'Bond / flexibility', 'Carboxylated, 50 % solids', 'Supplier Polymer-1', 140, 3000, 'approved'),
+  M('eps-beads', 'EPS beads 1–3 mm', 'Insulating aggregate', 'Coated, 1–3 mm', 'Supplier Polymer-2', 160, 800, 'pending', ['perlite']),
   M('fatty-ester', 'Fatty-acid ester release additive', 'Chemical release', 'Methyl ester', 'Supplier Chem', 130, 1500, 'approved'),
 ];
 

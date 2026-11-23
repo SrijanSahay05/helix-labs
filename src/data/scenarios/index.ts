@@ -3,10 +3,11 @@ import { TILE_SCENARIO } from '../demoProject';
 import { CRYSTALLINE, EPOXY_GROUT, GYPSUM, MICRO_CONCRETE, PCE } from './alternates';
 import { TILE_WHITE_S1 } from './tileWhiteS1';
 import { CONCRETE_ROUTE_ORDER, CONCRETE_SCENARIOS } from './concrete';
+import { MASONRY_ROUTE_ORDER, MASONRY_SCENARIOS } from './masonry';
 import type { Scenario } from './types';
 import { hashString, seeded } from '@/lib/motion';
 
-export const SCENARIOS: Scenario[] = [TILE_SCENARIO, TILE_WHITE_S1, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, EPOXY_GROUT, ...CONCRETE_SCENARIOS];
+export const SCENARIOS: Scenario[] = [TILE_SCENARIO, TILE_WHITE_S1, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, EPOXY_GROUT, ...CONCRETE_SCENARIOS, ...MASONRY_SCENARIOS];
 export const SCENARIO: Record<string, Scenario> = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));
 
 /** Keyword must start a word ("waterproof" matches "waterproofing"), so "rg" no longer fires inside "large". */
@@ -20,7 +21,7 @@ export function routeScenario(input: string, pinned?: string): Scenario {
   if (pinned && SCENARIO[pinned]) return SCENARIO[pinned];
   const t = input.toLowerCase();
   // order matters: specific variants first, "epoxy grout" before generic "grout", "integral waterproof" before "waterproof"
-  const order = [TILE_WHITE_S1, EPOXY_GROUT, ...CONCRETE_ROUTE_ORDER, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, TILE_SCENARIO];
+  const order = [TILE_WHITE_S1, EPOXY_GROUT, ...MASONRY_ROUTE_ORDER, ...CONCRETE_ROUTE_ORDER, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, TILE_SCENARIO];
   for (const s of order) if (s.keywords.some((k) => hasWord(t, k))) return s;
   if (t.includes('grout') && (t.includes('precision') || t.includes('machine') || t.includes('base plate'))) return MICRO_CONCRETE;
   return TILE_SCENARIO;

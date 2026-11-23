@@ -100,7 +100,7 @@ export const CATEGORIES: Category[] = [
     sku('bd-acr', 'Acrylic primer', ['acrylic'], ['liquid'], 'internal', T.coating),
   ]),
   cat('thermal', 2, 'Thermal insulation mortars', 'Thermometer', 'EPS / perlite lightweight mortar', 'Keeps buildings cooler', [
-    sku('th-perlite', 'Perlite lightweight mortar', ['cementitious'], ['powder'], 'EN 998-1 T', T.plaster),
+    sku('th-perlite', 'Perlite lightweight mortar', ['cementitious'], ['powder'], 'EN 998-1 T', [...T.plaster, 'thermal-conductivity']),
   ]),
   // 3 Waterproofing and sealing
   cat('wp-coatings', 3, 'Waterproofing coatings', 'Umbrella', 'Cementitious, acrylic, PU, bituminous, crystalline', 'Paint-on layers that keep water out', [

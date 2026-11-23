@@ -77,6 +77,7 @@ export const PROPERTIES: Property[] = [
   P('service-temp', 'durability', 'Service temperature', 'Temperature range in use', '°C', { internal: 'internal' }),
   P('efflorescence', 'durability', 'Efflorescence', 'White salt marks', 'rating', { internal: 'internal' }),
   P('coverage', 'durability', 'Coverage', 'How far a bag goes', 'kg/m²', { internal: 'internal' }),
+  P('thermal-conductivity', 'durability', 'Thermal conductivity', 'How much heat gets through', 'W/m·K', { EN: 'EN 1745 / EN 12667', ASTM: 'ASTM C518' }),
   P('crack-reduction', 'durability', 'Plastic-shrinkage crack reduction', 'Fewer early cracks', '%', { ASTM: 'ASTM C1579' }),
   P('moisture-loss', 'durability', 'Moisture loss (72 h)', 'Water lost while curing', 'kg/m²', { ASTM: 'ASTM C156' }),
   P('release-efficiency', 'durability', 'Release efficiency', 'Clean surface after demoulding', '%', { internal: 'internal' }),

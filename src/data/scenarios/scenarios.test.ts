@@ -7,7 +7,7 @@ import { costPerKg } from '@/lib/cost';
 import { routeScenario, SCENARIOS, scenarioForSub } from '.';
 
 /** Groups whose every subcategory has a demo scenario; grows one phase at a time. */
-const COVERED_GROUPS = [1];
+const COVERED_GROUPS = [1, 2];
 
 const midSum = (c: { range: [number, number] }[]) => c.reduce((n, x) => n + (x.range[0] + x.range[1]) / 2, 0);
 

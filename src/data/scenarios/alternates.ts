@@ -178,7 +178,7 @@ export const PCE: Scenario = {
 
 export const GYPSUM: Scenario = {
   id: 'gypsum', label: 'Gypsum plaster', chip: 'Gypsum plaster', example: 'Machine-applied gypsum plaster for interior block walls',
-  keywords: ['gypsum', 'plaster', 'putty', 'skim', 'pop'],
+  keywords: ['gypsum', 'plaster of paris', 'pop plaster', 'plaster'],
   projectName: 'Gypsum plaster — Interior machine-applied', codePrefix: 'HX-GP',
   docType: 'Technical Data Sheet', productGuess: 'Lightweight gypsum plaster (machine-applied)',
   categoryId: 'plaster', subcategoryId: 'pl-gypsum', chemistry: ['cementitious'], form: 'powder',
