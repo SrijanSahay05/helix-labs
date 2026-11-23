@@ -126,6 +126,16 @@ export const RAW_MATERIALS: RawMaterial[] = [
   M('vinylester', 'Vinylester resin (styrene-free)', 'Anchor binder', 'Methacrylate-diluted', 'Supplier Resin', 380, 1200, 'approved'),
   M('bpo', 'Dibenzoyl peroxide paste 50 %', 'Initiator', '50 % in plasticiser', 'Supplier Chem', 600, 200, 'approved'),
   M('zinc-dust', 'Zinc dust', 'Cathodic protection', '< 10 µm, 98 % Zn', 'Supplier Metal', 320, 3000, 'approved'),
+  // specialty (Phase 6 demos)
+  M('app-fr', 'Ammonium polyphosphate', 'Acid source (intumescent)', 'Phase II, 15 µm', 'Supplier FR', 180, 3000, 'approved'),
+  M('pentaerythritol', 'Pentaerythritol', 'Carbon source (intumescent)', 'Mono-PER, 98 %', 'Supplier FR', 160, 1500, 'approved'),
+  M('melamine', 'Melamine', 'Blowing agent (intumescent)', '99.8 %', 'Supplier FR', 110, 1500, 'approved'),
+  M('expandable-graphite', 'Expandable graphite', 'Intumescent filler', '300× expansion, 300 µm', 'Supplier FR', 350, 800, 'approved'),
+  M('sles', 'Sodium lauryl ether sulphate 70 %', 'Foaming surfactant', '2 EO, 70 %', 'Supplier Surfactant', 120, 4000, 'approved'),
+  M('polymer-stabiliser', 'Foam stabilising polymer', 'Foam half-life', 'Anionic polyacrylamide', 'Supplier Polymer-3', 600, 400, 'approved'),
+  M('propellant', 'DME / propane–butane propellant', 'Aerosol propellant', 'Blend', 'Supplier Gas', 120, 3000, 'approved'),
+  M('tcpp', 'TCPP flame retardant', 'Fire class', 'Tris(chloropropyl) phosphate', 'Supplier FR', 180, 2000, 'approved'),
+  M('foam-surfactant', 'Silicone foam surfactant', 'Cell structure', 'Polyether siloxane', 'Supplier PU', 900, 200, 'approved'),
   M('fatty-ester', 'Fatty-acid ester release additive', 'Chemical release', 'Methyl ester', 'Supplier Chem', 130, 1500, 'approved'),
 ];
 

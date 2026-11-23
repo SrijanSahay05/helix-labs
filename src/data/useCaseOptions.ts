@@ -3,4 +3,4 @@ export const SURFACES = ['Wall', 'Floor', 'Facade', 'Wet area', 'Submerged'];
 export const MATERIAL_TYPES = ['Ceramic', 'Vitrified', 'Porcelain', 'Natural stone', 'Glass mosaic', 'Large-format slab'];
 export const CLIMATES = ['Hot-dry', 'Hot-humid', 'Composite', 'Cold'];
 export const LOADS = ['None', 'Light foot', 'Heavy foot', 'Light vehicular', 'Heavy vehicular'];
-export const METHODS = ['Notched trowel', 'Spray', 'Brush/roller', 'Pour', 'Pump', 'Rubber float', 'Hand trowel', 'Putty blade', 'Torch-applied', 'Sheet laying', 'Injection', 'Cartridge gun', 'Dry-shake', 'Dosing pump'];
+export const METHODS = ['Notched trowel', 'Spray', 'Brush/roller', 'Pour', 'Pump', 'Rubber float', 'Hand trowel', 'Putty blade', 'Torch-applied', 'Sheet laying', 'Aerosol can', 'Injection', 'Cartridge gun', 'Dry-shake', 'Dosing pump'];

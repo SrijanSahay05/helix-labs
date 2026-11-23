@@ -4,6 +4,7 @@ import { useProjects } from '@/store/project';
 import { STANDARD_FAMILIES } from '@/data/standards';
 import { BRAND } from '@/data/copy';
 import { SCENARIOS } from '@/data/scenarios';
+import { findCategory, GROUPS } from '@/data/categories';
 import { Chip, SectionTitle, Tabs, Toggle } from '@/components/ui/primitives';
 import { Button } from '@/components/ui/Button';
 import { switchMode } from '@/components/shell/ModeSwitch';
@@ -101,10 +102,14 @@ export function SettingsPage() {
         <Row title="Product family" sub="Which product family Magic Start formulates; Auto detects it from the request">
           <select className="input h-9 w-full max-w-sm" value={ui.demoScenario} onChange={(e) => ui.set({ demoScenario: e.target.value })}>
             <option value="auto">Auto — detect from request</option>
-            {SCENARIOS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.chip}
-              </option>
+            {GROUPS.map((g) => (
+              <optgroup key={g.id} label={g.name}>
+                {SCENARIOS.filter((s) => findCategory(s.categoryId)?.group === g.id).map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.chip}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </Row>

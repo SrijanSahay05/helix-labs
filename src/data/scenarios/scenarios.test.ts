@@ -7,7 +7,7 @@ import { costPerKg } from '@/lib/cost';
 import { routeScenario, SCENARIOS, scenarioForSub } from '.';
 
 /** Groups whose every subcategory has a demo scenario; grows one phase at a time. */
-const COVERED_GROUPS = [1, 2, 3, 4, 5];
+const COVERED_GROUPS = [1, 2, 3, 4, 5, 6];
 
 const midSum = (c: { range: [number, number] }[]) => c.reduce((n, x) => n + (x.range[0] + x.range[1]) / 2, 0);
 
@@ -90,6 +90,12 @@ describe('demo scenarios', () => {
     ['Repair the spalled balcony slab', 'rm-r4'],
     ['Zinc-rich primer for rebar', 'pc-zinc'],
     ['Acrylic primer for walls', 'bd-acr'],
+    ['Fire-rated sealant for a service shaft', 'fp-firestop'],
+    ['Intumescent paint for steel columns', 'fp-intumescent'],
+    ['PU foam injection for a leaking crack', 'inj-pu'],
+    ['Expanding PU foam for window frames', 'ca-pufoam'],
+    ['MS polymer sealant for joints', 'sl-ms'],
+    ['MS polymer adhesive for panels', 'ca-ms'],
   ])('"%s" routes to %s', (brief, id) => {
     expect(routeScenario(brief).id).toBe(id);
   });

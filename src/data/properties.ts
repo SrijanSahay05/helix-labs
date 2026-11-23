@@ -47,6 +47,8 @@ export const PROPERTIES: Property[] = [
   P('drying-time', 'rheological', 'Drying time', 'Dry to touch in', 'h', { ASTM: 'ASTM D1640' }),
   P('foam-expansion', 'rheological', 'Foam expansion', 'How much the foam grows', '×', { EN: 'EN 1504-5', internal: 'internal' }),
   P('gel-time', 'rheological', 'Gel / reaction time', 'How fast it turns solid', 's', { EN: 'EN 1504-5', internal: 'internal' }),
+  P('foam-density', 'rheological', 'Foam density', 'Weight of the cured foam', 'kg/m³', { EN: 'EN 17333-1', ASTM: 'ASTM D1622' }),
+  P('half-life', 'rheological', 'Foam half-life', 'How long the foam lasts', 'min', { internal: 'EFNARC drainage test' }),
   P('slump-retention', 'rheological', 'Slump retention @ 60 min', 'Stays workable in the truck', 'mm', { IS: 'IS 1199', EN: 'EN 12350-2', ASTM: 'ASTM C143' }),
   P('water-reduction', 'rheological', 'Water reduction', 'Water saved in the mix', '%', { IS: 'IS 9103', EN: 'EN 934-2', ASTM: 'ASTM C494' }),
   // Mechanical
@@ -92,6 +94,9 @@ export const PROPERTIES: Property[] = [
   P('co2-resistance', 'durability', 'CO₂ diffusion resistance (sD)', 'Stops carbonation', 'm', { EN: 'EN 1062-6' }),
   P('zinc-content', 'chemical', 'Zinc in dry film', 'Zinc that protects the steel', '%', { EN: 'ISO 3549', ASTM: 'ASTM D520' }),
   P('salt-spray', 'durability', 'Salt-spray resistance', 'Hours before rust', 'h', { EN: 'ISO 9227', ASTM: 'ASTM B117' }),
+  P('fire-resistance', 'durability', 'Fire resistance', 'Minutes it holds in a fire', 'min', { EN: 'EN 13381-8 / EN 1366', ASTM: 'ASTM E119' }),
+  P('char-expansion', 'durability', 'Char expansion', 'How much it swells in heat', '×', { internal: 'furnace test' }),
+  P('biodegradability', 'durability', 'Biodegradability (28 d)', 'Breaks down in soil', '%', { EN: 'OECD 301' }),
   P('crack-reduction', 'durability', 'Plastic-shrinkage crack reduction', 'Fewer early cracks', '%', { ASTM: 'ASTM C1579' }),
   P('moisture-loss', 'durability', 'Moisture loss (72 h)', 'Water lost while curing', 'kg/m²', { ASTM: 'ASTM C156' }),
   P('release-efficiency', 'durability', 'Release efficiency', 'Clean surface after demoulding', '%', { internal: 'internal' }),

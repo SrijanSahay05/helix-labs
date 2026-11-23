@@ -32,6 +32,9 @@ const T = {
   injection: ['viscosity', 'gel-time', 'foam-expansion', 'pot-life', 'elongation', 'pull-off', 'water-absorption', 'service-temp'],
   release: ['viscosity', 'voc', 'release-efficiency', 'shelf-life', 'service-temp'],
   structural: ['viscosity', 'pot-life', 'gel-time', 'setting-time', 'bond-strength', 'resin-tensile', 'elongation', 'pull-off', 'tg', 'compressive'],
+  fire: ['solids', 'voc', 'viscosity', 'drying-time', 'pull-off', 'char-expansion', 'fire-resistance'],
+  tbm: ['solids', 'ph', 'viscosity', 'foam-expansion', 'half-life', 'biodegradability'],
+  foam: ['foam-expansion', 'foam-density', 'drying-time', 'shrinkage', 'thermal-conductivity', 'service-temp'],
   generic: ['solids', 'voc', 'viscosity', 'pot-life', 'setting-time', 'compressive', 'pull-off', 'shrinkage', 'service-temp'],
 };
 
@@ -119,7 +122,7 @@ export const CATEGORIES: Category[] = [
   ]),
   cat('sealants', 3, 'Joint sealants', 'Pipette', 'PU / MS / silicone sealants', 'Fills gaps between panels', [
     sku('sl-pu', 'PU sealant', ['polyurethane'], ['paste'], 'EN 15651 / ASTM C920', T.sealant),
-    sku('sl-ms', 'MS polymer sealant', ['polymer-modified'], ['paste'], 'EN 15651', T.sealant),
+    sku('sl-ms', 'MS polymer sealant', ['polymer-modified'], ['paste'], 'EN 15651', [...T.sealant, 'shear-adh']),
   ]),
   cat('injection', 3, 'Injection systems for leaks', 'Syringe', 'PU foam / acrylic gel injection', 'Stops active leaks from inside', [
     sku('inj-pu', 'PU foam injection', ['polyurethane'], ['liquid', '2-component'], 'EN 1504-5', T.injection),
@@ -183,14 +186,14 @@ export const CATEGORIES: Category[] = [
   ]),
   // 6 Specialty
   cat('fire', 6, 'Fire protection', 'Flame', 'Intumescent coatings, firestop', 'Slows fire spreading through a building', [
-    sku('fp-intumescent', 'Intumescent coatings', ['acrylic', 'epoxy'], ['liquid'], 'BS 476-20 / EN 13381-8', T.coating),
-    sku('fp-firestop', 'Firestop', ['acrylic'], ['paste'], 'EN 1366-3', T.sealant),
+    sku('fp-intumescent', 'Intumescent coatings', ['acrylic', 'epoxy'], ['liquid'], 'BS 476-20 / EN 13381-8', T.fire),
+    sku('fp-firestop', 'Firestop', ['acrylic'], ['paste'], 'EN 1366-3', [...T.sealant, 'fire-resistance', 'char-expansion']),
   ]),
   cat('tunnelling', 6, 'Tunnelling and mining chemicals', 'Mountain', 'TBM foams, soil conditioners', 'Chemicals for digging tunnels', [
-    sku('tn-foam', 'TBM foaming agent', ['polymer-modified'], ['liquid'], 'EFNARC', T.generic),
+    sku('tn-foam', 'TBM foaming agent', ['polymer-modified'], ['liquid'], 'EFNARC', T.tbm),
   ]),
   cat('constr-adhesives', 6, 'Construction adhesives and foams', 'Sticker', 'PU foam, MS adhesives', 'Glues and gap-filling foams', [
-    sku('ca-pufoam', 'PU gap-filling foam', ['polyurethane'], ['liquid'], 'internal', T.sealant),
+    sku('ca-pufoam', 'PU gap-filling foam', ['polyurethane'], ['liquid'], 'EN 17333', T.foam),
     sku('ca-ms', 'MS polymer adhesive', ['polymer-modified'], ['paste'], 'EN 15651', T.sealant),
   ]),
 ];
