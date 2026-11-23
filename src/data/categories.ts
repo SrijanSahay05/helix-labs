@@ -31,6 +31,7 @@ const T = {
   membrane: ['tensile-strength', 'elongation', 'cold-flex', 'service-temp', 'permeability', 'crack-bridging', 'uv', 'pull-off'],
   injection: ['viscosity', 'gel-time', 'foam-expansion', 'pot-life', 'elongation', 'pull-off', 'water-absorption', 'service-temp'],
   release: ['viscosity', 'voc', 'release-efficiency', 'shelf-life', 'service-temp'],
+  structural: ['viscosity', 'pot-life', 'gel-time', 'setting-time', 'bond-strength', 'resin-tensile', 'elongation', 'pull-off', 'tg', 'compressive'],
   generic: ['solids', 'voc', 'viscosity', 'pot-life', 'setting-time', 'compressive', 'pull-off', 'shrinkage', 'service-temp'],
 };
 
@@ -164,21 +165,21 @@ export const CATEGORIES: Category[] = [
     sku('mc-ff', 'Free-flow micro-concrete', ['cementitious'], ['powder'], 'EN 1504-3 R4 / ASTM C928', T.repair),
   ]),
   cat('inj-resins', 5, 'Structural injection resins', 'Syringe', 'Low-viscosity epoxy injection', 'Glues cracks back together', [
-    sku('ir-epoxy', 'Low-viscosity epoxy', ['epoxy'], ['2-component', 'liquid'], 'EN 1504-5 / ASTM C881', T.epoxyGrout),
+    sku('ir-epoxy', 'Low-viscosity epoxy', ['epoxy'], ['2-component', 'liquid'], 'EN 1504-5 / ASTM C881', T.structural),
   ]),
   cat('precision-grouts', 5, 'Precision grouts', 'Cylinder', 'Non-shrink cementitious grouts', 'Fills under machine base plates', [
     sku('pg-ns', 'Non-shrink cementitious grout', ['cementitious'], ['powder'], 'ASTM C1107 / EN 1504-6', T.repair),
     sku('pg-epoxy', 'Epoxy precision grout', ['epoxy'], ['2-component'], 'ASTM C579', T.epoxyGrout),
   ]),
   cat('anchors', 5, 'Anchors', 'Anchor', 'Chemical anchors (epoxy/vinylester)', 'Fixes rods into concrete', [
-    sku('an-ve', 'Vinylester chemical anchor', ['epoxy'], ['2-component', 'paste'], 'EAD 330499', T.epoxyGrout),
+    sku('an-ve', 'Vinylester chemical anchor', ['epoxy'], ['2-component', 'paste'], 'EAD 330499', T.structural),
   ]),
   cat('fibre-wrap', 5, 'Fibre wrap', 'Ribbon', 'CFRP sheets + saturant', 'Carbon sheets to strengthen beams', [
-    sku('fw-cfrp', 'CFRP saturant system', ['epoxy'], ['sheet', '2-component'], 'ACI 440.2R', T.epoxyGrout),
+    sku('fw-cfrp', 'CFRP saturant system', ['epoxy'], ['sheet', '2-component'], 'ACI 440.2R', T.structural),
   ]),
   cat('protective', 5, 'Anti-corrosion and protective coatings', 'ShieldCheck', 'Zinc-rich primers, anti-carbonation', 'Stops rust and protects concrete', [
-    sku('pc-anticarb', 'Anti-carbonation coating', ['acrylic'], ['liquid'], 'EN 1504-2', T.coating),
-    sku('pc-zinc', 'Zinc-rich rebar primer', ['epoxy'], ['liquid'], 'EN 1504-7', T.coating),
+    sku('pc-anticarb', 'Anti-carbonation coating', ['acrylic'], ['liquid'], 'EN 1504-2', [...T.coating, 'co2-resistance']),
+    sku('pc-zinc', 'Zinc-rich rebar primer', ['epoxy'], ['liquid'], 'EN 1504-7', [...T.coating, 'zinc-content', 'salt-spray', 'drying-time']),
   ]),
   // 6 Specialty
   cat('fire', 6, 'Fire protection', 'Flame', 'Intumescent coatings, firestop', 'Slows fire spreading through a building', [

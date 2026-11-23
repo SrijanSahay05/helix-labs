@@ -121,6 +121,11 @@ export const RAW_MATERIALS: RawMaterial[] = [
   M('quartz-agg', 'Quartz aggregate 0.5–2 mm', 'Wear aggregate', 'Washed, angular', 'Supplier Min', 8, 20000, 'approved'),
   M('pu-polyol', 'Polyether polyol blend', 'PU binder (A)', 'Castor-modified, OH 250', 'Supplier PU', 220, 2000, 'approved'),
   M('mdi-iso', 'Polymeric MDI', 'PU hardener (B)', 'NCO 31 %', 'Supplier PU', 180, 2500, 'approved'),
+  // repair, strengthening and protection (Phase 5 demos)
+  M('bpf-epoxy', 'Bisphenol-F epoxy resin', 'Low-viscosity binder', 'EEW 170, 3,500 mPa·s', 'Supplier Resin', 300, 1500, 'approved', ['epoxy-resin']),
+  M('vinylester', 'Vinylester resin (styrene-free)', 'Anchor binder', 'Methacrylate-diluted', 'Supplier Resin', 380, 1200, 'approved'),
+  M('bpo', 'Dibenzoyl peroxide paste 50 %', 'Initiator', '50 % in plasticiser', 'Supplier Chem', 600, 200, 'approved'),
+  M('zinc-dust', 'Zinc dust', 'Cathodic protection', '< 10 µm, 98 % Zn', 'Supplier Metal', 320, 3000, 'approved'),
   M('fatty-ester', 'Fatty-acid ester release additive', 'Chemical release', 'Methyl ester', 'Supplier Chem', 130, 1500, 'approved'),
 ];
 

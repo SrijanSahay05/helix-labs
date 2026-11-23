@@ -70,7 +70,7 @@ export const CRYSTALLINE: Scenario = {
 
 export const MICRO_CONCRETE: Scenario = {
   id: 'microconcrete', label: 'Micro-concrete repair', chip: 'Micro-concrete repair', example: 'Micro-concrete for jacketing damaged columns',
-  keywords: ['repair', 'micro-concrete', 'micro concrete', 'microconcrete', 'jacket', 'column', 'spalling'],
+  keywords: ['micro-concrete', 'micro concrete', 'microconcrete', 'jacket', 'jacketing', 'column'],
   projectName: 'Free-flow micro-concrete — Column jacketing', codePrefix: 'HX-MC',
   docType: 'Technical Data Sheet', productGuess: 'Free-flow shrinkage-compensated micro-concrete',
   categoryId: 'micro-concrete', subcategoryId: 'mc-ff', chemistry: ['cementitious'], form: 'powder',
