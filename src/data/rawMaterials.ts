@@ -66,7 +66,7 @@ export const RAW_MATERIALS: RawMaterial[] = [
   M('al-sulphate', 'Aluminium sulphate solution', 'Accelerator (alkali-free)', 'Iron-free, 8 % Al₂O₃', 'Supplier Chem', 32, 12000, 'approved'),
   M('al-hydroxide', 'Amorphous aluminium hydroxide', 'Accelerator booster', 'Amorphous, 64 % Al₂O₃', 'Supplier Chem', 110, 2000, 'approved'),
   M('dea', 'Diethanolamine', 'Stabiliser / early strength', '99 %', 'Supplier Amines', 150, 900, 'approved'),
-  M('na-aluminate', 'Sodium aluminate solution', 'Accelerator (alkaline)', '25 % Na₂O', 'Supplier Chem', 45, 6000, 'approved'),
+  M('na-aluminate', 'Sodium aluminate solution', 'Accelerator (alkaline)', '25 % Na₂O', 'Supplier Chem', 30, 6000, 'approved'),
   M('pp-fibre', 'Polypropylene monofilament 12 mm', 'Plastic-shrinkage control', '18 µm, 12 mm', 'Supplier Fibre', 210, 4000, 'approved'),
   M('spin-finish', 'Hydrophilic spin finish', 'Fibre dispersion', 'Non-ionic', 'Supplier Surfactant', 320, 300, 'approved'),
   M('steel-fibre', 'Hooked-end steel fibre 60 mm', 'Post-crack strength', 'l/d 65, 1150 MPa', 'Supplier Steel', 95, 20000, 'approved'),

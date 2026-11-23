@@ -342,17 +342,17 @@ export const SC_ALK = variant(SC_AF, {
   productGuess: 'Sodium aluminate alkaline liquid accelerator', subcategoryId: 'sc-alk',
   standard: 'EN 934-5', standardAlt: 'EN 14487-1 J1',
   useCase: { concreteGrade: 'Shotcrete', cementType: 'OPC 53', wcRatio: 0.45, dosagePct: [3, 5], slumpRetentionMin: 60, haulTimeMin: 30, climate: 'Hot-humid', appTemp: [20, 40], method: 'Spray', standardClass: 'EN 934-5' },
-  benchmarks: [bench('bm-sa', 'Benchmark K', 'sc-alk', 'EN 934-5', 30, [['setting-time', 2, 'min', 'TDS'], ['early-strength', 0.8, 'N/mm²', 'TDS'], ['alkali', 18, '% Na₂O eq', 'TDS'], ['compressive', 70, '%', 'Lab-tested']])],
+  benchmarks: [bench('bm-sa', 'Benchmark K', 'sc-alk', 'EN 934-5', 40, [['setting-time', 2, 'min', 'TDS'], ['early-strength', 0.8, 'N/mm²', 'TDS'], ['alkali', 18, '% Na₂O eq', 'TDS'], ['compressive', 70, '%', 'Lab-tested']])],
   targets: [
     { propertyId: 'setting-time', operator: '<=', value: 3, priority: 'must', reason: 'Initial set of accelerated paste, min', bench: 2, confidence: 0.88 },
     { propertyId: 'early-strength', operator: '>=', value: 0.6, priority: 'must', std: 'J1 curve (EN 14487-1)', reason: 'J1 at 6 h', bench: 0.8, confidence: 0.84 },
     { propertyId: 'compressive', operator: '>=', value: 75, priority: 'important', std: '≥ 75 % of control (EN 934-5)', stdMin: 75, reason: 'Aluminates cut late strength — % of control at 28 d', bench: 70, confidence: 0.8 },
     { propertyId: 'ph', operator: '>=', value: 13, priority: 'nice', reason: 'Strongly alkaline — label and PPE', confidence: 0.9 },
   ],
-  top3: [{ id: 'cost', reason: 'Mines buy on price — ≤ ₹ 25/kg' }, { id: 'setting-time', reason: 'Thick layers overhead' }, { id: 'compressive', reason: 'Aluminate strength loss' }],
-  constraints: { costCeiling: 25, budgetBand: 'economy', materialLimits: [], compliance: ['No chlorides'], site: { tMin: 20, tMax: 40, rhMax: 95 }, mustHaves: ['Fast set'], remark: 'Not for permanent linings — temporary ground support.' },
+  top3: [{ id: 'cost', reason: 'Mines buy on price — ≤ ₹ 28/kg' }, { id: 'setting-time', reason: 'Thick layers overhead' }, { id: 'compressive', reason: 'Aluminate strength loss' }],
+  constraints: { costCeiling: 28, budgetBand: 'economy', materialLimits: [], compliance: ['No chlorides'], site: { tMin: 20, tMax: 40, rhMax: 95 }, mustHaves: ['Fast set'], remark: 'Not for permanent linings — temporary ground support.' },
   summary: {
-    scientist: '**Helix is formulating:** a **sodium-aluminate alkaline accelerator** to **EN 934-5** for **temporary mine shotcrete**, setting in **≤ 3 min** with **28 d strength ≥ 75 % of control**, at **≤ ₹ 25 / kg**.',
+    scientist: '**Helix is formulating:** a **sodium-aluminate alkaline accelerator** to **EN 934-5** for **temporary mine shotcrete**, setting in **≤ 3 min** with **28 d strength ≥ 75 % of control**, at **≤ ₹ 28 / kg**.',
     plain: '**Helix is making:** a **cheap liquid that makes sprayed concrete set in minutes** for **temporary support in mines**.',
   },
   pathways: [
@@ -581,7 +581,7 @@ export const CUR_WAX: Scenario = {
     ] },
     COMMON_GUIDED[1],
   ],
-  benchmarks: [bench('bm-cu', 'Benchmark C-W', 'cur-wax', 'ASTM C309 Type 2', 85, [['moisture-loss', 0.45, 'kg/m²', 'TDS'], ['drying-time', 3, 'h', 'TDS'], ['solids', 30, '%', 'TDS'], ['voc', 20, 'g/L', 'TDS']])],
+  benchmarks: [bench('bm-cu', 'Benchmark C-W', 'cur-wax', 'ASTM C309 Type 2', 110, [['moisture-loss', 0.45, 'kg/m²', 'TDS'], ['drying-time', 3, 'h', 'TDS'], ['solids', 30, '%', 'TDS'], ['voc', 20, 'g/L', 'TDS']])],
   targets: [
     { propertyId: 'moisture-loss', operator: '<=', value: 0.45, priority: 'must', std: '≤ 0.55 kg/m² in 72 h (ASTM C309)', stdMax: 0.55, bench: 0.45, confidence: 0.9 },
     { propertyId: 'drying-time', operator: '<=', value: 4, priority: 'important', std: '≤ 4 h (ASTM C309)', stdMax: 4, bench: 3, confidence: 0.86 },
@@ -590,9 +590,9 @@ export const CUR_WAX: Scenario = {
     { propertyId: 'solids', operator: 'between', value: [28, 34], priority: 'nice', bench: 30, confidence: 0.8 },
   ],
   top3: [{ id: 'moisture-loss', reason: '45 °C wind dries slabs in hours' }, { id: 'cost', reason: 'Highway jobs buy by the tonne' }, { id: 'uv', reason: 'White film keeps the slab cool' }],
-  constraints: { costCeiling: 60, budgetBand: 'economy', materialLimits: [], compliance: ['Water-based'], site: { tMin: 25, tMax: 45, rhMax: 40 }, mustHaves: ['Sprayable with a knapsack sprayer'], remark: '200 L drums, 0.2 L/m² coverage.' },
+  constraints: { costCeiling: 80, budgetBand: 'economy', materialLimits: [], compliance: ['Water-based'], site: { tMin: 25, tMax: 45, rhMax: 40 }, mustHaves: ['Sprayable with a knapsack sprayer'], remark: '200 L drums, 0.2 L/m² coverage.' },
   summary: {
-    scientist: '**Helix is formulating:** a **white paraffin-wax emulsion curing compound** to **ASTM C309 Type 2** for **pavement slabs in hot-dry weather**, with **moisture loss ≤ 0.45 kg/m² in 72 h** and **dry in ≤ 4 h**, at **≤ ₹ 60 / kg**.',
+    scientist: '**Helix is formulating:** a **white paraffin-wax emulsion curing compound** to **ASTM C309 Type 2** for **pavement slabs in hot-dry weather**, with **moisture loss ≤ 0.45 kg/m² in 72 h** and **dry in ≤ 4 h**, at **≤ ₹ 80 / kg**.',
     plain: '**Helix is making:** a **white liquid sprayed on fresh concrete roads** that **keeps the water in** so the slab **hardens properly** in the heat.',
   },
   pathways: [

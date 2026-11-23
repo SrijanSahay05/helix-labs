@@ -2,7 +2,7 @@ import type { Pathway, Proposal, Result, StandardFamily, TargetRow, Trial } from
 import type { Scenario } from '@/data/scenarios/types';
 import { profileFor } from '@/data/useCaseProfiles';
 import { methodFor, PROP } from '@/data/properties';
-import { balanceTo100, midpointRecipe } from './cost';
+import { balanceTo100, costPerKg, midpointRecipe } from './cost';
 import { statusFor } from './status';
 import { hashString, seeded } from './motion';
 
@@ -124,7 +124,7 @@ export function bestTrial(trials: Trial[], results: Result[]): Trial | undefined
 }
 
 /** Analysis: propose the next iteration. */
-export function proposeNext(s: Scenario, trials: Trial[], results: Result[], iteration: number): Proposal {
+export function proposeNext(s: Scenario, trials: Trial[], results: Result[], iteration: number, costCeiling = s.constraints.costCeiling): Proposal {
   const nextIdx = trials.length + 1;
   if (s.trialsIter2 && s.iter2 && iteration === 1 && trials.some((t) => t.id === s.iter2!.base)) {
     const base = trials.find((t) => t.id === s.iter2!.base)!;
@@ -142,12 +142,21 @@ export function proposeNext(s: Scenario, trials: Trial[], results: Result[], ite
   const best = bestTrial(trials, results) ?? trials[trials.length - 1];
   const lever = s.leverMaterial in best.recipe ? s.leverMaterial : Object.keys(best.recipe).find((k) => k !== s.balanceMaterial)!;
   const from = best.recipe[lever];
+  const recipeAt = (f: number) => balanceTo100({ ...best.recipe, [lever]: r2(from * f) }, s.balanceMaterial);
+  // analysis only closes a trial under the cost ceiling, so never propose one above it: step the lever back until it fits
+  const fit = (f: number) => {
+    while (costCeiling !== undefined && f > 0.8 && costPerKg(recipeAt(f)) > costCeiling) f = r2(f - 0.01);
+    return f;
+  };
   const mk = (id: string, f: number): Trial => {
-    const recipe = balanceTo100({ ...best.recipe, [lever]: r2(from * f) }, s.balanceMaterial);
+    const recipe = recipeAt(f);
     return { id, iteration: iteration + 1, recipe, meta: Object.fromEntries(Object.keys(recipe).map((m) => [m, { by: 'helix' as const, confidence: 0.84 }])) };
   };
-  const a = mk(`T${nextIdx}`, 1.15);
-  const b = mk(`T${nextIdx + 1}`, 1.22);
+  const fa = fit(1.15);
+  const fb = fit(1.22);
+  const a = mk(`T${nextIdx}`, fa);
+  const b = mk(`T${nextIdx + 1}`, fb === fa ? r2(fa - 0.03) : fb);
+  const capped = fa < 1.15;
   const sc = trialScore(best.id, results);
   return {
     trials: [a, b],
@@ -156,6 +165,8 @@ export function proposeNext(s: Scenario, trials: Trial[], results: Result[], ite
         .filter(([m, v]) => Math.abs((best.recipe[m] ?? 0) - v) > 1e-9)
         .map(([m, v]) => ({ trialId: t.id, materialId: m, from: best.recipe[m] ?? 0, to: v })),
     ),
-    summary: `${best.id} passes ${sc.pass}/${sc.total} measured targets. Raising the lever material by 15–22 % should close the remaining gaps; balance adjusted to keep 100.00 %.`,
+    summary: capped
+      ? `${best.id} passes ${sc.pass}/${sc.total} measured targets. Adjusting the lever material only as far as the ₹ ${costCeiling}/kg cost ceiling allows; balance adjusted to keep 100.00 %.`
+      : `${best.id} passes ${sc.pass}/${sc.total} measured targets. Raising the lever material by 15–22 % should close the remaining gaps; balance adjusted to keep 100.00 %.`,
   };
 }

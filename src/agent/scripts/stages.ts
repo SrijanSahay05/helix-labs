@@ -295,7 +295,7 @@ export function analysisScript(p: Project): AgentScript {
     ev.push(log(id, `Targets met by ${metBy.id}`, 'analyst'));
     ev.push({ t: 'done', summary: `Targets met ✓ · ${metBy.id}` });
   } else {
-    const prop = proposeNext(s, p.trials, p.results, p.iteration);
+    const prop = proposeNext(s, p.trials, p.results, p.iteration, p.constraints.costCeiling);
     ev.push({ t: 'think', text: 'Must-have gaps found — proposing the next iteration.' });
     ev.push({ t: 'tool', name: 'propose_iteration', args: `iteration=${p.iteration + 1}`, result: prop.trials.map((t) => t.id).join(', '), ms: 600 });
     ev.push({ t: 'step', index: 2, status: 'warn' }, { t: 'step', index: 3, status: 'running' });
