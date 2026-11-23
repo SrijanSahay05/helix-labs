@@ -7,7 +7,6 @@ import { botMotionAllowed } from '@/agent/engine';
 import { agentName } from '@/store/agents';
 import { Check, Download, FileText, Lock, Send, ShieldCheck } from 'lucide-react';
 import type { Project } from '@/types';
-import { SCENARIO } from '@/data/scenarios';
 import { PROP } from '@/data/properties';
 import { useProjects } from '@/store/project';
 import { useUI } from '@/store/ui';
@@ -64,7 +63,6 @@ function CrewCelebration({ p, frozen }: { p: Project; frozen: boolean }) {
 }
 
 export function StageFinal({ p }: { p: Project }) {
-  const s = SCENARIO[p.scenarioId];
   const role = useUI((st) => st.role);
   const user = useUI((st) => st.userName);
   const { update, setStage, log } = useProjects();
@@ -77,7 +75,7 @@ export function StageFinal({ p }: { p: Project }) {
   const days = Math.max(1, Math.round((Date.now() - new Date(p.activity[p.activity.length - 1]?.at ?? Date.now()).getTime()) / 86400000)) || 11;
 
   const lock = () => {
-    const code = p.finalCode ?? `${s.codePrefix}-014`;
+    const code = p.finalCode ?? p.code;
     update(p.id, (x) => ({ ...x, finalCode: code, approval: 'submitted', stageNotes: { ...x.stageNotes, final: `Formulation ${code} locked · ${x.iteration} iterations · ${days} days` } }));
     setStage(p.id, 'final', 'complete');
     log(p.id, user, `Locked ${code} and submitted for approval`);

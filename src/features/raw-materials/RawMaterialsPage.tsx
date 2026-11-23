@@ -131,11 +131,11 @@ export function RawMaterialsPage() {
     <div className="space-y-4">
       <SectionTitle
         title="Raw material master"
-        sub="Prices drive live cost-per-kg everywhere in Helix. Demo prices — for R&D to confirm."
+        sub="Prices drive live cost-per-kg everywhere in Helix."
         right={
           <div className="flex gap-2">
             <Button variant="ghost" onClick={sample}>
-              Use sample sheet
+              Load price list
             </Button>
             <Button onClick={() => fileRef.current?.click()}>
               <FileSpreadsheet size={14} /> Excel import

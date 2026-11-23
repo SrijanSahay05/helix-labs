@@ -26,6 +26,8 @@ interface UIState {
   /** dev: which dataset the Graphs panel shows, and forced states */
   graphsDataset: 'cream22' | 'tile' | 'project' | 'synthetic' | 'empty' | 'few' | 'lowconf' | 'missing' | 'failed';
   graphsReadOnly: boolean;
+  /** Magic Start scenario: 'auto' routes by keyword, otherwise this scenario id is always used */
+  demoScenario: string;
   /** dev state switcher overrides: `${projectId}:${stage}` → status */
   devStates: Record<string, StageStatus>;
   setTheme: (t: 'light' | 'dark') => void;
@@ -56,6 +58,7 @@ export const useUI = create<UIState>()(
       botMotion: 'calm',
       graphsDataset: 'cream22',
       graphsReadOnly: false,
+      demoScenario: 'auto',
       devStates: {},
       setTheme: (theme) => set({ theme }),
       setMode: (mode, remember = true) => set((s) => ({ mode, modeRemembered: remember || s.modeRemembered })),

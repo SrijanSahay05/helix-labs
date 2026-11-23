@@ -1,18 +1,26 @@
 import type { Source } from '@/types';
 import { TILE_SCENARIO } from '../demoProject';
 import { CRYSTALLINE, EPOXY_GROUT, GYPSUM, MICRO_CONCRETE, PCE } from './alternates';
+import { TILE_WHITE_S1 } from './tileWhiteS1';
 import type { Scenario } from './types';
 import { hashString, seeded } from '@/lib/motion';
 
-export const SCENARIOS: Scenario[] = [TILE_SCENARIO, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, EPOXY_GROUT];
+export const SCENARIOS: Scenario[] = [TILE_SCENARIO, TILE_WHITE_S1, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, EPOXY_GROUT];
 export const SCENARIO: Record<string, Scenario> = Object.fromEntries(SCENARIOS.map((s) => [s.id, s]));
 
-/** Route Magic Start input (text or link) to a seeded scenario by keyword; default is tile adhesive. */
-export function routeScenario(input: string): Scenario {
+/** Keyword must start a word ("waterproof" matches "waterproofing"), so "rg" no longer fires inside "large". */
+const hasWord = (t: string, k: string) => new RegExp(`\\b${k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(t);
+
+/**
+ * Route Magic Start input (text or link) to a seeded scenario: the pinned demo when one is set
+ * (Settings → Demo scenario), else by keyword; default is tile adhesive.
+ */
+export function routeScenario(input: string, pinned?: string): Scenario {
+  if (pinned && SCENARIO[pinned]) return SCENARIO[pinned];
   const t = input.toLowerCase();
-  // order matters: "epoxy grout" before generic "grout", "waterproof" before "coating"
-  const order = [EPOXY_GROUT, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, TILE_SCENARIO];
-  for (const s of order) if (s.keywords.some((k) => t.includes(k))) return s;
+  // order matters: specific variants first, "epoxy grout" before generic "grout", "waterproof" before "coating"
+  const order = [TILE_WHITE_S1, EPOXY_GROUT, CRYSTALLINE, MICRO_CONCRETE, PCE, GYPSUM, TILE_SCENARIO];
+  for (const s of order) if (s.keywords.some((k) => hasWord(t, k))) return s;
   if (t.includes('grout') && (t.includes('precision') || t.includes('machine') || t.includes('base plate'))) return MICRO_CONCRETE;
   return TILE_SCENARIO;
 }
@@ -26,14 +34,14 @@ const TEMPLATES: Record<Source['type'], string[]> = {
   'Internal formulation': ['Internal formulation HX-{n} — {c}'],
 };
 
-/** Hand-written sources + generated generic ones (~60 total). Titles are generic and badged "Demo". */
+/** Hand-written sources + generated generic ones (~60 total; none for curated scenarios). Titles are generic and badged "Demo". */
 export function buildSources(s: Scenario, withInternal = false): Source[] {
   const rnd = seeded(hashString(s.id));
   const out: Source[] = [...s.sources];
   const types: Source['type'][] = ['Paper', 'Paper', 'Paper', 'Patent', 'TDS', 'Supplier sheet'];
   if (withInternal) types.push('Internal formulation', 'Internal formulation');
   let i = 0;
-  while (out.length < 60) {
+  while (!s.curated && out.length < 60) {
     const type = types[Math.floor(rnd() * types.length)];
     const c = s.clusters[i % s.clusters.length];
     const tpl = TEMPLATES[type][Math.floor(rnd() * TEMPLATES[type].length)];

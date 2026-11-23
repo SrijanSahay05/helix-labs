@@ -94,7 +94,7 @@ export function BenchmarkDetail() {
           <FileUp size={14} /> Upload new TDS
         </Button>
         <Button variant="ghost" onClick={() => upload(`${b.name.toLowerCase().replace(/\s/g, '-')}-tds.pdf`)}>
-          Use sample PDF
+          Use competitor PDF
         </Button>
         <input ref={ref} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0].name)} />
       </div>

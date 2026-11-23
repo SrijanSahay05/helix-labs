@@ -114,7 +114,7 @@ export function answer(q: string, ctx: AskContext): AskAnswer {
     const tested = p.results.filter((r) => r.status !== 'pending');
     if (!tested.length) {
       const due = p.results.map((r) => r.dueDate).filter(Boolean).sort()[0];
-      return { agent: 'lab', thought: ['Check lab results', 'All results still pending'], text: `No lab results are in yet, so I can't rank the trials. The first tests are due **${due ? new Date(due).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'soon'}**. Use **Load sample lab results** to see the analysis on demo data.` };
+      return { agent: 'lab', thought: ['Check lab results', 'All results still pending'], text: `No lab results are in yet, so I can't rank the trials. The first tests are due **${due ? new Date(due).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'soon'}**. Use **Import lab results** when the lab sheet is ready.` };
     }
     const ids = [...new Set(tested.map((r) => r.trialId))];
     const scored = ids.map((id) => ({ id, pass: p.results.filter((r) => r.trialId === id && r.status === 'pass').length })).sort((a, b) => b.pass - a.pass);

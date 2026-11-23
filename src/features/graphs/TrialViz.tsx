@@ -376,11 +376,9 @@ export function TrialViz({ dataset, storeKey, readOnly, onAddTrial, onPinTrial, 
       const arrow = effect && effect.id === top.paramId ? (effect.d >= 0 ? ' ↑ → ' + primary.name + ' ↑' : ' ↑ → ' + primary.name + ' ↓') : ` → ${primary.name}`;
       out.push({ id: `effect:${top.paramId}`, text: `Strong effect: ${middleEllipsis(p.name.split(' (')[0], 22)}${arrow} (importance ${top.score.toFixed(2)})`, go: () => set({ view: '2d', x: top.paramId, y: primary.id, picked: {} }) });
     }
-    const fitInfo = fit;
-    if (fitInfo && fitInfo.cvR2 !== null && fitInfo.cvR2 < 0.5) out.push({ id: 'lowconf', text: `Model low confidence (R² ${fitInfo.cvR2.toFixed(2)}) — check the parity view`, go: () => set({ view: 'parity' }) });
     return out.filter((x) => !rt.dismissedInsights.includes(x.id)).slice(0, 2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rt.importance, rt.dismissedInsights, fit, varying, primary, effect]);
+  }, [rt.importance, rt.dismissedInsights, varying, primary, effect]);
 
   // outlier insight comes from LOO
   const [outlier, setOutlier] = useState<{ id: string; resid: number } | null>(null);

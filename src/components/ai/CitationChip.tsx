@@ -24,7 +24,6 @@ export function CitationChip({ n, source, onOpen }: { n: number | string; source
             <div className="flex items-center gap-2">
               <SourceTypeTag type={source.type} />
               <span className="mono text-ink3">{source.year}</span>
-              <Tag className="ml-auto">Demo</Tag>
             </div>
             <div className="font-medium text-ink">{source.title}</div>
             <div className="text-ink2">{source.snippet ?? source.finding}</div>

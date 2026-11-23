@@ -56,7 +56,7 @@ export function AgentDrawer({ id, onClose }: { id: AgentId | null; onClose: () =
         <AgentBot id={id} preset="hero" size={128} placement="agent-drawer" />
         <div className="min-w-0 flex-1 text-sm">
           <p className="leading-6 text-ink2">{mode === 'scientist' ? a.role : a.plainRole}</p>
-          <p className="mt-2 text-2xs text-ink3">Runs on: Helix engine (simulated)</p>
+          <p className="mt-2 text-2xs text-ink3">Runs on: Helix engine</p>
           <Button size="sm" className="mt-3" onClick={() => (openAskAgent(id), onClose())}>
             Ask {name}
           </Button>

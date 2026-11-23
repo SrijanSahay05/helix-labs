@@ -143,7 +143,7 @@ export function buildCream22(): Dataset {
   const qParams = { ...recipe(rnd, 64.25, 10.6, 2.3, t4), speed: t4.speed, temp: t4.temp };
   return {
     id: 'cream22',
-    title: 'Cosmetic cream — stearate soap emulsion (demo)',
+    title: 'Cosmetic cream — stearate soap emulsion',
     parameters: CREAM_PARAMS,
     results: CREAM_RESULTS,
     trials,

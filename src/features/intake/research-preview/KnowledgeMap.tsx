@@ -473,7 +473,7 @@ function UploadButton({ data }: { data: ResearchData }) {
             </div>
             <input ref={ref} type="file" accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={(e) => e.target.files?.[0] && take(e.target.files[0].name)} />
             <button type="button" onClick={() => take('Internal test report — heat ageing.pdf')} className="mt-2 text-2xs font-medium text-accent hover:underline">
-              Use a sample file
+              Use a recent file
             </button>
             {state && (
               <div className="mt-3 flex items-center gap-2 border-t border-line pt-3 text-xs text-ink2">

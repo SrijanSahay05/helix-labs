@@ -144,7 +144,7 @@ export function IntakeWizard() {
   /* Magic Start */
   const onMagic = (input: string, kind: 'link' | 'pdf' | 'text') => {
     resetDraft();
-    const s = routeScenario(input);
+    const s = routeScenario(input, useUI.getState().demoScenario);
     const domain = kind === 'link' ? (domainOf(input) ?? undefined) : kind === 'pdf' ? input : undefined;
     const runId = runAgent(magicStartScript(s, input, kind, domain, standards), { id: uid('intake'), onFill: fillDraft });
     patchDraft({ request: input, source: { kind, value: input, domain }, scenarioId: s.id, magic: 'running', runId });

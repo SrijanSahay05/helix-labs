@@ -62,6 +62,6 @@ export const USE_CASE_LABEL: Record<string, { scientist: string; 'non-scientist'
 export const BRAND = {
   name: 'helix',
   agentName: 'Helix · Formulation Agent',
-  model: 'helix-form-2 (simulated)',
+  model: 'helix-form-2',
   org: 'Your organisation',
 };

@@ -82,11 +82,6 @@ function SidebarBody({ onNavigate, rail }: { onNavigate: () => void; rail?: bool
         >
           <Settings size={17} strokeWidth={1.8} /> {!rail && 'Settings'}
         </NavLink>
-        {!rail && (
-          <p className="px-3 py-2 text-[11px] leading-4 text-ink3">
-            <b className="font-semibold text-ink2">Demo workspace.</b> Agent runs are simulated; values are demo data for R&D to confirm.
-          </p>
-        )}
         <div className={cn('mt-1 flex items-center border-t border-line pt-3', rail ? 'justify-center' : 'gap-2.5 px-2')}>
           <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent-soft text-2xs font-semibold text-accent" title={rail ? `${userName} · ${ROLE_LABEL[role]}` : undefined}>
             {initials(userName)}

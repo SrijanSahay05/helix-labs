@@ -10,6 +10,7 @@ import { costPerKg } from '@/lib/cost';
 import { uid } from '@/lib/format';
 import type { AgentId } from '@/agents/registry';
 import { applyResearchPreviewChoices } from '@/features/intake/research-preview/store';
+import { buildResearch } from '@/data/demo/research';
 
 const upd = (id: string, fn: (p: Project) => Project) => useProjects.getState().update(id, fn);
 const stage = (id: string, st: StageId, status: StageStatus, note?: string): AgentEvent => ({
@@ -25,6 +26,9 @@ export function literatureScript(p: Project): AgentScript {
   const all = buildSources(s, useUI.getState().usePastFormulations);
   const id = p.id;
   const byType = (t: Source['type']) => all.filter((x) => x.type === t).length;
+  // same scanned / extracted totals as the Research preview
+  const { scanned, facts: extractions } = buildResearch(s.id).counts;
+  const scannedAt = (f: number) => Math.round(scanned * f);
   const batches = [all.slice(0, 12), all.slice(12, 30), all.slice(30, 48), all.slice(48)];
   const ev: AgentEvent[] = [
     stage(id, 'literature', 'running', 'Analysing the brief…'),
@@ -48,14 +52,14 @@ export function literatureScript(p: Project): AgentScript {
     { t: 'orb', state: 'searching', label: 'Searching papers, patents, TDS and supplier sheets…' },
     { t: 'tool', name: 'search_literature', args: `q="${s.clusters[0].toLowerCase()} ${s.clusters[2]?.toLowerCase() ?? ''}", k=40`, result: `${byType('Paper')} papers`, ms: 1400 },
     { t: 'effect', run: () => upd(id, (x) => ({ ...x, sources: batches[0] })) },
-    { t: 'count', key: 'sources', value: 140 },
+    { t: 'count', key: 'sources', value: scannedAt(0.34) },
     { t: 'tool', name: 'search_literature', args: 'type=patent, k=20', result: `${byType('Patent')} patents`, ms: 1000 },
     { t: 'effect', run: () => upd(id, (x) => ({ ...x, sources: [...batches[0], ...batches[1]] })) },
-    { t: 'count', key: 'sources', value: 290 },
+    { t: 'count', key: 'sources', value: scannedAt(0.7) },
     { t: 'tool', name: 'search_literature', args: `type=tds, subcategory="${p.subcategoryId}"`, result: `${byType('TDS')} TDS · ${byType('Supplier sheet')} supplier sheets`, ms: 900 },
     { t: 'effect', run: () => upd(id, (x) => ({ ...x, sources: [...batches[0], ...batches[1], ...batches[2]] })) },
-    { t: 'count', key: 'sources', value: 412 },
-    { t: 'check', text: `412 scanned → ${all.length} relevant (relevance ≥ 0.35)`, ok: true },
+    { t: 'count', key: 'sources', value: scanned },
+    { t: 'check', text: `${scanned} scanned → ${all.length} relevant (relevance ≥ 0.35)`, ok: true },
     { t: 'step', index: 3, status: 'done' },
     { t: 'step', index: 4, status: 'running' },
     { t: 'orb', state: 'connecting', label: 'Clustering sources by mechanism…' },
@@ -64,14 +68,14 @@ export function literatureScript(p: Project): AgentScript {
     { t: 'step', index: 4, status: 'done' },
     { t: 'step', index: 5, status: 'running' },
     { t: 'orb', state: 'shaping', label: 'Extracting dosages and measured values…' },
-    { t: 'tool', name: 'extract_findings', args: 'top=20', result: '41 extractions', ms: 1100 },
+    { t: 'tool', name: 'extract_findings', args: 'top=20', result: `${extractions} extractions`, ms: 1100 },
     { t: 'check', text: 'Every extraction linked to a source and page', ok: true },
     { t: 'step', index: 5, status: 'done' },
     // pins, exclusions and uploads made in the Research preview carry over
     { t: 'effect', run: () => upd(id, applyResearchPreviewChoices) },
-    stage(id, 'literature', 'complete', `${all.length} sources · ${s.clusters.length} clusters · 41 extractions`),
+    stage(id, 'literature', 'complete', `${all.length} sources · ${s.clusters.length} clusters · ${extractions} extractions`),
     log(id, `Literature complete — ${all.length} sources, ${s.clusters.length} clusters`, 'scholar'),
-    { t: 'done', summary: `${all.length} sources · ${s.clusters.length} clusters · 41 extractions` },
+    { t: 'done', summary: `${all.length} sources · ${s.clusters.length} clusters · ${extractions} extractions` },
   ];
   return { id: `literature.${p.id}`, title: 'Literature review', agent: 'scholar', events: ev };
 }
@@ -212,10 +216,10 @@ export function resultsParseScript(p: Project, source: 'sample' | 'paste', paste
     agent: 'lab',
     events: [
       stage(id, 'results', 'running', 'Parsing lab results…'),
-      { t: 'orb', state: 'working', label: source === 'paste' ? `Parsing ${n} values…` : 'Loading sample lab results…' },
+      { t: 'orb', state: 'working', label: source === 'paste' ? `Parsing ${n} values…` : 'Importing lab results…' },
       { t: 'plan', steps: ['Parse block', 'Map to trials × properties', 'Compute means', 'Classify pass / borderline / fail'] },
       { t: 'step', index: 0, status: 'running' },
-      { t: 'tool', name: 'parse_paste', args: source === 'paste' ? 'clipboard' : '"sample-lab-sheet.xlsx"', result: `${fresh.length * 5} readings`, ms: 800 },
+      { t: 'tool', name: 'parse_paste', args: source === 'paste' ? 'clipboard' : `"lab-results-${p.code}.xlsx"`, result: `${fresh.length * 5} readings`, ms: 800 },
       { t: 'step', index: 0, status: 'done' },
       { t: 'step', index: 1, status: 'running' },
       { t: 'think', text: `Mapped to ${target.length} trials × ${s.measured.length} properties.` },
@@ -243,6 +247,23 @@ export function resultsParseScript(p: Project, source: 'sample' | 'paste', paste
   };
 }
 
+/** "Beats X on …. Still below X on …. " from the measured means, only for the benchmark's numeric values. */
+function benchmarkVerdict(p: Project, trialId: string): string {
+  const bm = SCENARIO[p.scenarioId].benchmarks[0];
+  if (!bm) return '';
+  const better: string[] = [];
+  const worse: string[] = [];
+  bm.values.forEach((v) => {
+    const r = p.results.find((x) => x.trialId === trialId && x.propertyId === v.propertyId && x.status !== 'pending');
+    if (!r || typeof v.value !== 'number') return;
+    const lower = p.targets.find((t) => t.propertyId === v.propertyId)?.operator === '<=';
+    const name = (PROP[v.propertyId]?.name ?? v.propertyId).replace('Tensile adhesion — ', '').toLowerCase();
+    const ok = lower ? r.mean <= v.value : r.mean >= v.value;
+    (ok ? better : worse).push(`${name} (${r.mean} vs ${v.value})`);
+  });
+  return [better.length ? `Matches or beats ${bm.name} on ${better.join(', ')}. ` : '', worse.length ? `Still below ${bm.name} on ${worse.join(', ')}. ` : ''].join('');
+}
+
 export function analysisScript(p: Project): AgentScript {
   const s = SCENARIO[p.scenarioId];
   const id = p.id;
@@ -266,8 +287,8 @@ export function analysisScript(p: Project): AgentScript {
     ev.push({ t: 'think', text: `${metBy.id} passes every must-have target within cost ceiling.` });
     ev.push({ t: 'step', index: 2, status: 'done' }, { t: 'step', index: 3, status: 'running' });
     ev.push({ t: 'orb', state: 'composing', label: 'Writing the verdict…' });
-    ev.push({ t: 'type', target: 'analysis.summary', text: `**Targets met ✓** — ${metBy.id} passes all must-have targets at ₹ ${costPerKg(metBy.recipe).toFixed(2)}/kg (ceiling ₹ ${p.constraints.costCeiling}). Heat-aged adhesion and deformation now beat ${s.benchmarks[0].name}. Ready to lock as the final formulation.` });
-    ev.push({ t: 'effect', run: () => upd(id, (x) => ({ ...x, proposal: undefined, finalTrial: metBy.id, finalCode: x.finalCode ?? `${s.codePrefix}-014` })) });
+    ev.push({ t: 'type', target: 'analysis.summary', text: `**Targets met ✓** — ${metBy.id} passes all must-have targets at ₹ ${costPerKg(metBy.recipe).toFixed(2)}/kg (ceiling ₹ ${p.constraints.costCeiling}). ${benchmarkVerdict(p, metBy.id)}Ready to lock as the final formulation.` });
+    ev.push({ t: 'effect', run: () => upd(id, (x) => ({ ...x, proposal: undefined, finalTrial: metBy.id, finalCode: x.finalCode ?? x.code })) });
     ev.push({ t: 'step', index: 3, status: 'done' });
     ev.push(stage(id, 'analysis', 'complete', `Targets met ✓ · ${metBy.id}`));
     ev.push(stage(id, 'final', 'running', 'Ready to lock'));

@@ -126,8 +126,8 @@ export function bestTrial(trials: Trial[], results: Result[]): Trial | undefined
 /** Analysis: propose the next iteration. */
 export function proposeNext(s: Scenario, trials: Trial[], results: Result[], iteration: number): Proposal {
   const nextIdx = trials.length + 1;
-  if (s.trialsIter2 && iteration === 1 && trials.some((t) => t.id === 'T3')) {
-    const base = trials.find((t) => t.id === 'T3')!;
+  if (s.trialsIter2 && s.iter2 && iteration === 1 && trials.some((t) => t.id === s.iter2!.base)) {
+    const base = trials.find((t) => t.id === s.iter2!.base)!;
     const changes = s.trialsIter2.flatMap((t) =>
       Object.entries(t.recipe)
         .filter(([m, v]) => Math.abs((base.recipe[m] ?? 0) - v) > 1e-9)
@@ -136,8 +136,7 @@ export function proposeNext(s: Scenario, trials: Trial[], results: Result[], ite
     return {
       trials: s.trialsIter2.map((t) => ({ ...t, recipe: { ...t.recipe } })),
       changes,
-      summary:
-        'T3 meets 12/14 targets. Heat-ageing adhesion is borderline (0.94 vs ≥ 1.0 N/mm²). Proposed: raise RDP 4.0 → 4.6 %, reduce Ca-formate 0.8 → 0.6 % [1][6]. T6 pushes RDP to 4.8 % as a safety margin.',
+      summary: s.iter2.summary,
     };
   }
   const best = bestTrial(trials, results) ?? trials[trials.length - 1];

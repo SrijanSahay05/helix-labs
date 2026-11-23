@@ -3,6 +3,7 @@ import { useUI, type DemoSpeed } from '@/store/ui';
 import { useProjects } from '@/store/project';
 import { STANDARD_FAMILIES } from '@/data/standards';
 import { BRAND } from '@/data/copy';
+import { SCENARIOS } from '@/data/scenarios';
 import { Chip, SectionTitle, Tabs, Toggle } from '@/components/ui/primitives';
 import { Button } from '@/components/ui/Button';
 import { switchMode } from '@/components/shell/ModeSwitch';
@@ -33,9 +34,9 @@ export function SettingsPage() {
   const toggleStd = (s: StandardFamily) => ui.set({ standards: ui.standards.includes(s) ? ui.standards.filter((x) => x !== s) : [...ui.standards, s] });
   return (
     <div className="max-w-[960px] space-y-4">
-      <SectionTitle title="Settings" sub={`${BRAND.org} · demo workspace`} />
+      <SectionTitle title="Settings" sub={BRAND.org} />
       <div className="card px-5 md:px-6">
-        <Row title="Role (demo)" sub="Switch to see permissions change">
+        <Row title="Role" sub="Permissions for this workspace">
           <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
             {ROLES.map((r) => (
               <button key={r.id} onClick={() => ui.set({ role: r.id })} className={`rounded-lg border p-2.5 text-left ${ui.role === r.id ? 'border-accent bg-accent-soft' : 'border-line hover:border-ink3'}`}>
@@ -76,7 +77,7 @@ export function SettingsPage() {
             ]}
           />
         </Row>
-        <Row title="Standards at launch" sub="Open question — method codes shown from enabled standards only">
+        <Row title="Standards" sub="Method codes are shown from enabled standards only">
           <div className="flex gap-2">
             {STANDARD_FAMILIES.map((s) => (
               <Chip key={s.id} active={ui.standards.includes(s.id)} onClick={() => toggleStd(s.id)}>
@@ -85,7 +86,7 @@ export function SettingsPage() {
             ))}
           </div>
         </Row>
-        <Row title="Demo speed" sub="Agent animation speed everywhere">
+        <Row title="Agent speed" sub="How fast agent activity is shown">
           <Tabs
             value={String(ui.speed) as '0.5' | '1' | '2' | 'instant'}
             onChange={(v) => ui.set({ speed: (v === 'instant' ? 'instant' : Number(v)) as DemoSpeed })}
@@ -97,7 +98,17 @@ export function SettingsPage() {
             ]}
           />
         </Row>
-        <Row title="What a non-scientist receives" sub="Open question in the brief">
+        <Row title="Product family" sub="Which product family Magic Start formulates; Auto detects it from the request">
+          <select className="input h-9 w-full max-w-sm" value={ui.demoScenario} onChange={(e) => ui.set({ demoScenario: e.target.value })}>
+            <option value="auto">Auto — detect from request</option>
+            {SCENARIOS.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.chip}
+              </option>
+            ))}
+          </select>
+        </Row>
+        <Row title="What a non-scientist receives" sub="Output for plain-language users">
           <Tabs
             value={ui.nonScientistOutput}
             onChange={(v) => ui.set({ nonScientistOutput: v })}
@@ -107,16 +118,16 @@ export function SettingsPage() {
             ]}
           />
         </Row>
-        <Row title="Use past formulations as context" sub="UI only — adds “Internal formulation” sources to Literature">
+        <Row title="Use past formulations as context" sub="Adds “Internal formulation” sources to Literature">
           <Toggle checked={ui.usePastFormulations} onChange={(v) => ui.set({ usePastFormulations: v })} />
         </Row>
         <Row title="Autopilot in intake" sub="Helix fills each step and auto-advances after a 1.2 s review pause">
           <Toggle checked={ui.autopilot} onChange={(v) => ui.set({ autopilot: v })} />
         </Row>
-        <Row title="Demo data">
+        <Row title="Workspace data">
           <div className="flex gap-2">
             <Button variant="danger" size="sm" onClick={resetAll}>
-              Reset projects to seed
+              Reset projects
             </Button>
             <Button variant="ghost" size="sm" onClick={() => ui.set({ modeRemembered: false })}>
               Forget remembered mode

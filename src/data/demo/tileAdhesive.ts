@@ -59,7 +59,7 @@ export function buildTileAdhesive(): Dataset {
       status: res ? 'complete' : 'pending',
     };
   });
-  return { id: 'tile', title: 'Exterior tile adhesive (demo)', parameters: params(), results: TILE_RESULTS, trials, modelTrainedOn: 0, balanceId: 'sand' };
+  return { id: 'tile', title: 'Exterior tile adhesive', parameters: params(), results: TILE_RESULTS, trials, modelTrainedOn: 0, balanceId: 'sand' };
 }
 
 /** Synthetic 2 000-trial dataset for the performance check. */

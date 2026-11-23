@@ -13,7 +13,7 @@ import type { Dataset } from './types';
 let cream: Dataset | null = null;
 const creamDs = () => (cream ??= buildCream22());
 
-/** Dataset for the Graphs panel: the demo cream by default; the dev switcher (⌘⇧D) picks others and forces states. */
+/** Dataset for the Graphs panel: the demo cream by default (the project's own trials for curated scenarios); the dev switcher (⌘⇧D) picks others and forces states. */
 export function useGraphsDataset(p: Project): { ds: Dataset; key: string; isProject: boolean } {
   const choice = useUI((s) => s.graphsDataset);
   const trials = p.trials;
@@ -39,6 +39,7 @@ export function useGraphsDataset(p: Project): { ds: Dataset; key: string; isProj
       case 'failed':
         return { ds: variant('cream-failed', 'Cosmetic cream — T22 failed', (d) => ({ ...d, trials: d.trials.map((t) => (t.id === 'T22' ? { ...t, status: 'failed', results: Object.fromEntries(Object.keys(t.results).map((k) => [k, null])) } : t)) })), key: `${p.id}:failed`, isProject: false };
       default:
+        if (SCENARIO[p.scenarioId]?.curated) return { ds: datasetFromProject({ ...p, trials, results }), key: `${p.id}:project`, isProject: true };
         return { ds: c, key: `${p.id}:cream22`, isProject: false };
     }
   }, [choice, p, trials, results]);

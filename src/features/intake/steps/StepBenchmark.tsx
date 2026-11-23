@@ -176,7 +176,7 @@ function Upload() {
         Drop a TDS PDF here or click to choose
         <span className="text-2xs text-ink3">or</span>
         <button onClick={(e) => (e.stopPropagation(), start('competitor-tds-sample.pdf'))} className="text-xs font-medium text-accent">
-          use a sample TDS
+          use the competitor TDS
         </button>
         <input ref={ref} type="file" accept="application/pdf" className="hidden" onChange={(e) => e.target.files?.[0] && start(e.target.files[0].name)} />
       </div>

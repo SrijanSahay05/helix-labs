@@ -114,7 +114,7 @@ export function StageResults({ p }: { p: Project }) {
             <Clipboard size={13} /> Paste from Excel
           </Button>
           <Button size="sm" variant="primary" onClick={() => startResults(p.id, 'sample')} disabled={!pending.length}>
-            <FlaskRound size={13} /> Load sample lab results
+            <FlaskRound size={13} /> Import lab results
           </Button>
           {!pending.length && p.stages.analysis !== 'running' && (
             <Button size="sm" onClick={() => startAnalysis(p.id)}>
@@ -252,7 +252,7 @@ export function StageResults({ p }: { p: Project }) {
           <textarea className="input mono h-40 py-2 text-xs" value={pasteText} onChange={(e) => setPasteText(e.target.value)} placeholder={'1.12\t1.28\t1.34\t1.41\n0.92\t1.04\t1.08\t1.12\n…'} />
           <div className="flex justify-between">
             <button className="text-xs text-accent" onClick={() => setPasteText(s.measured.map((pid) => p.trials.map((t) => (s.resultMeans?.[pid]?.[t.id] ?? 1).toFixed(2)).join('\t')).join('\n'))}>
-              Fill with sample block
+              Fill from latest lab sheet
             </button>
             <Button
               variant="primary"

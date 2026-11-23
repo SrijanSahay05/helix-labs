@@ -25,6 +25,7 @@ export const RAW_MATERIALS: RawMaterial[] = [
   M('vae-rdp-b', 'VAE RDP grade B', 'Flexibility / adhesion', 'Grade B, Tg 4 °C', 'Supplier Polymer-2', 205, 1200, 'pending', ['vae-rdp']),
   M('hpmc60', 'HPMC 60k', 'Water retention / rheology', '60,000 mPa·s', 'Supplier Cellulose-2', 420, 700, 'approved', ['mhec']),
   M('white-cement', 'White cement', 'Binder', 'White, 90 % reflectance', 'Supplier North', 22, 6000, 'approved', ['opc53']),
+  M('cell-fibre', 'White cellulose fibre 300 µm', 'Anti-sag / crack control', '300 µm, white', 'Supplier Cellulose', 150, 500, 'approved'),
   M('acrylic-rdp', 'Acrylic copolymer powder', 'Deformability', 'Low-Tg', 'Supplier Polymer-2', 310, 300, 'approved'),
   M('fly-ash', 'Fly ash (class F)', 'Pozzolan / cost', 'IS 3812', 'Supplier Power', 1.8, 25000, 'approved'),
   M('gypsum', 'Beta-hemihydrate gypsum', 'Binder', 'β-plaster', 'Supplier Gyp', 6.5, 30000, 'approved'),

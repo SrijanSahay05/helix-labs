@@ -53,7 +53,7 @@ export function TemplatesPage() {
     <div className="space-y-4">
       <SectionTitle
         title="Property templates"
-        sub="Each subcategory loads its own subset of the property library as default targets. Draft — for R&D to confirm."
+        sub="Each subcategory loads its own subset of the property library as default targets."
         right={
           <div className="flex gap-2">
             <Button onClick={suggest}>

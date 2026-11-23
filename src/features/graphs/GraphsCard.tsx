@@ -65,7 +65,6 @@ export function GraphsCard({ dataset: base, storeKey, placement, defaultView = '
   const withPrimary = dataset.trials.filter((t) => t.status === 'complete' && t.results[primaryResult(dataset).id] !== null).length;
   const fit = sameData ? rt.fits[primaryResult(dataset).id] : undefined;
   const trainedOn = sameData ? rt.trainedOn : 0;
-  const lowConf = fit && ((fit.cvR2 !== null && fit.cvR2 < 0.5) || fit.trainedOn < 8);
   const stale = sameData && trainedOn > 0 && trainedOn < withPrimary && !rt.fitting;
 
   useEffect(() => {
@@ -105,7 +104,6 @@ export function GraphsCard({ dataset: base, storeKey, placement, defaultView = '
           Trained on {trainedOn} trials
         </button>
         {fit?.cvR2 !== null && fit?.cvR2 !== undefined && <span className="mono text-ink3">· R² {fit.cvR2.toFixed(2)}</span>}
-        {lowConf && <span className="rounded bg-[var(--borderline-soft)] px-1.5 text-[11px] font-medium text-borderline">Model low confidence{fit?.cvR2 !== null && fit?.cvR2 !== undefined ? ` (R² ${fit.cvR2.toFixed(2)})` : ` (n ${fit?.trainedOn})`}</span>}
       </span>
     );
   })();

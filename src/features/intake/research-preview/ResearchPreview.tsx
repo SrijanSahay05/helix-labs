@@ -322,11 +322,7 @@ export function ResearchPreview({ onContinue, onBack }: { onContinue: () => void
                     ({p1.scores.overall.toFixed(2)}, ₹{p1.costPerKg.toFixed(1)}/kg)
                   </span>
                 </motion.div>
-              ) : (
-                <motion.div key="run" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="truncate text-right text-xs text-ink3">
-                  Everything here will run for real →
-                </motion.div>
-              )}
+              ) : null}
             </AnimatePresence>
           </div>
           <Button variant="primary" onClick={onContinue} className="h-10 shrink-0">
