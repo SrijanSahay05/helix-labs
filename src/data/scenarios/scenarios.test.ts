@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { CATEGORIES, findSubcategory } from '../categories';
 import { PROP } from '../properties';
 import { MAT } from '../rawMaterials';
-import { buildResults, buildTargets, buildTrials, proposeNext } from '@/lib/simulate';
+import { buildResults, buildTargets, buildTrials, mustHavesMet, proposeNext } from '@/lib/simulate';
 import { costPerKg } from '@/lib/cost';
 import { routeScenario, SCENARIOS, scenarioForSub } from '.';
 
@@ -49,6 +49,23 @@ describe('demo scenarios', () => {
     const trials = buildTrials(s, s.pathways[0]);
     const results = buildResults(s, trials, buildTargets(s, ['IS', 'EN']));
     for (const t of proposeNext(s, trials, results, 1).trials) expect(costPerKg(t.recipe)).toBeLessThanOrEqual(s.constraints.costCeiling ?? Infinity);
+  });
+
+  // the analysis loop: accept each proposal and import results until a trial passes the must-haves under the ceiling
+  it.each(SCENARIOS.map((s) => [s.id, s] as const))('%s: iterations reach a final trial', (_, s) => {
+    const targets = buildTargets(s, ['IS', 'EN']);
+    const ceiling = s.constraints.costCeiling ?? Infinity;
+    let trials = buildTrials(s, s.pathways[0]);
+    let results = buildResults(s, trials, targets);
+    let iteration = 1;
+    const met = () => trials.some((t) => t.iteration === iteration && mustHavesMet(t.id, results, targets) && costPerKg(t.recipe) <= ceiling);
+    while (!met() && iteration < 5) {
+      const next = proposeNext(s, trials, results, iteration).trials;
+      trials = [...trials, ...next];
+      results = [...results, ...buildResults(s, next, targets)];
+      iteration++;
+    }
+    expect(iteration).toBeLessThanOrEqual(3);
   });
 
   it.each(SCENARIOS.map((s) => [s.id, s] as const))('%s: its example brief routes to it', (_, s) => {

@@ -139,13 +139,16 @@ export function proposeNext(s: Scenario, trials: Trial[], results: Result[], ite
       summary: s.iter2.summary,
     };
   }
-  const best = bestTrial(trials, results) ?? trials[trials.length - 1];
+  // analysis only closes a trial under the cost ceiling: build on the best affordable trial (else the cheapest)
+  // and step the lever back until the new trial fits, so iterations converge instead of drifting over budget
+  const affordable = costCeiling === undefined ? trials : trials.filter((t) => costPerKg(t.recipe) <= costCeiling);
+  const cheapest = [...trials].sort((a, b) => costPerKg(a.recipe) - costPerKg(b.recipe))[0];
+  const best = (affordable.length ? bestTrial(affordable, results) : cheapest) ?? trials[trials.length - 1];
   const lever = s.leverMaterial in best.recipe ? s.leverMaterial : Object.keys(best.recipe).find((k) => k !== s.balanceMaterial)!;
   const from = best.recipe[lever];
   const recipeAt = (f: number) => balanceTo100({ ...best.recipe, [lever]: r2(from * f) }, s.balanceMaterial);
-  // analysis only closes a trial under the cost ceiling, so never propose one above it: step the lever back until it fits
   const fit = (f: number) => {
-    while (costCeiling !== undefined && f > 0.8 && costPerKg(recipeAt(f)) > costCeiling) f = r2(f - 0.01);
+    while (costCeiling !== undefined && f > 0.5 && costPerKg(recipeAt(f)) > costCeiling) f = r2(f - 0.01);
     return f;
   };
   const mk = (id: string, f: number): Trial => {
