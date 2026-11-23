@@ -1,38 +1,11 @@
-import type { Pathway, Source, Status } from '@/types';
 import type { Scenario } from './types';
 import { COMMON_GUIDED, speedQuestion } from './guided';
+import { bench, pw, src } from './build';
 
 /** Lighter alternate scenarios used for link / keyword routing in Magic Start. Demo data — for R&D to confirm. */
 
-const pw = (
-  id: string,
-  rank: number,
-  name: string,
-  comp: [string, number, number][],
-  predicted: [string, number, Status][],
-  s: [number, number, number, number],
-  costPerKg: number,
-  equipment: string[],
-  hazards: string[],
-  citations: string[],
-): Pathway => ({
-  id, rank, name,
-  composition: comp.map(([materialId, a, b]) => ({ materialId, range: [a, b] })),
-  predicted: predicted.map(([propertyId, value, status]) => ({ propertyId, value, status })),
-  scores: { targetMatch: s[0], cost: s[1], availability: s[2], overall: s[3] },
-  costPerKg, equipment, hazards, citations,
-});
-
-const src = (id: string, type: Source['type'], title: string, year: number, relevance: number, finding: string, cluster: string): Source => ({ id, type, title, year, relevance, finding, cluster });
-
-const bench = (id: string, name: string, sub: string, cls: string, price: number, values: [string, number | string, string, 'TDS' | 'MSDS' | 'Lab-tested'][]) => ({
-  id, name, maker: 'Competitor 3', subcategoryId: sub, standardClass: cls, pricePerKg: price, updated: '2026-08-30',
-  values: values.map(([propertyId, value, unit, tag], i) => ({ propertyId, value, unit, tag, page: 1 + (i % 3), confidence: 0.82 + ((i * 7) % 15) / 100 })),
-  versions: [{ v: 1, date: '2026-08-30', note: 'Created from TDS' }],
-});
-
 export const CRYSTALLINE: Scenario = {
-  id: 'crystalline', label: 'Crystalline waterproofing coating', chip: 'Crystalline waterproofing',
+  id: 'crystalline', label: 'Crystalline waterproofing coating', chip: 'Crystalline waterproofing', example: 'Stop water seeping through basement walls and a water tank',
   keywords: ['waterproof', 'crystalline', 'basement', 'leak', 'tank', 'membrane', 'coating'],
   projectName: 'Crystalline waterproofing — Basement & tanks', codePrefix: 'HX-WP',
   docType: 'Technical Data Sheet', productGuess: 'Crystalline cementitious waterproofing slurry',
@@ -96,8 +69,8 @@ export const CRYSTALLINE: Scenario = {
 };
 
 export const MICRO_CONCRETE: Scenario = {
-  id: 'microconcrete', label: 'Micro-concrete repair', chip: 'Micro-concrete repair',
-  keywords: ['repair', 'micro', 'jacket', 'column', 'spalling', 'micro-concrete'],
+  id: 'microconcrete', label: 'Micro-concrete repair', chip: 'Micro-concrete repair', example: 'Micro-concrete for jacketing damaged columns',
+  keywords: ['repair', 'micro-concrete', 'micro concrete', 'microconcrete', 'jacket', 'column', 'spalling'],
   projectName: 'Free-flow micro-concrete — Column jacketing', codePrefix: 'HX-MC',
   docType: 'Technical Data Sheet', productGuess: 'Free-flow shrinkage-compensated micro-concrete',
   categoryId: 'micro-concrete', subcategoryId: 'mc-ff', chemistry: ['cementitious'], form: 'powder',
@@ -152,7 +125,7 @@ export const MICRO_CONCRETE: Scenario = {
 };
 
 export const PCE: Scenario = {
-  id: 'pce', label: 'PCE superplasticiser admixture', chip: 'PCE superplasticiser',
+  id: 'pce', label: 'PCE superplasticiser admixture', chip: 'PCE superplasticiser', example: 'PCE superplasticiser for M40 ready-mix with 2 hours slump retention',
   keywords: ['pce', 'admixture', 'superplasticiser', 'superplasticizer', 'slump', 'rmc', 'ready-mix'],
   projectName: 'PCE superplasticiser — RMC slump retention', codePrefix: 'HX-AD',
   docType: 'Technical Data Sheet', productGuess: 'PCE-based high-range water reducer (slump retaining)',
@@ -204,7 +177,7 @@ export const PCE: Scenario = {
 };
 
 export const GYPSUM: Scenario = {
-  id: 'gypsum', label: 'Gypsum plaster', chip: 'Gypsum plaster',
+  id: 'gypsum', label: 'Gypsum plaster', chip: 'Gypsum plaster', example: 'Machine-applied gypsum plaster for interior block walls',
   keywords: ['gypsum', 'plaster', 'putty', 'skim', 'pop'],
   projectName: 'Gypsum plaster — Interior machine-applied', codePrefix: 'HX-GP',
   docType: 'Technical Data Sheet', productGuess: 'Lightweight gypsum plaster (machine-applied)',
@@ -258,6 +231,7 @@ export const GYPSUM: Scenario = {
 
 export const EPOXY_GROUT: Scenario = {
   id: 'epoxy', label: 'Epoxy grout', chip: 'Epoxy grout · RG',
+  example: 'Stain-proof epoxy grout for a commercial kitchen floor',
   keywords: ['epoxy', 'grout', 'stain', 'kitchen', 'pool grout', 'rg'],
   projectName: 'Epoxy grout — Commercial kitchens', codePrefix: 'HX-EG',
   docType: 'Technical Data Sheet', productGuess: '3-component epoxy tile grout',

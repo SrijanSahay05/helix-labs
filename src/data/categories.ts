@@ -24,6 +24,11 @@ const T = {
   repair: ['water-demand', 'flow', 'setting-time', 'compressive-1d', 'compressive', 'flexural', 'pull-off', 'shrinkage', 'expansion', 'modulus', 'chloride', 'permeability'],
   sealant: ['voc', 'viscosity', 'sag', 'pot-life', 'elongation', 'hardness', 'modulus', 'uv', 'service-temp'],
   coating: ['solids', 'voc', 'viscosity', 'pot-life', 'pull-off', 'elongation', 'crack-bridging', 'uv', 'vapour', 'chem-resistance'],
+  shotcrete: ['solids', 'ph', 'alkali', 'chloride', 'setting-time', 'early-strength', 'compressive-1d', 'compressive'],
+  fibre: ['compressive', 'flexural', 'residual-flexural', 'crack-reduction', 'shrinkage', 'air-content'],
+  grindingAid: ['solids', 'ph', 'chloride', 'blaine', 'residue-45', 'mill-output', 'setting-time', 'compressive-1d', 'compressive'],
+  curing: ['solids', 'voc', 'viscosity', 'drying-time', 'moisture-loss', 'uv'],
+  release: ['viscosity', 'voc', 'release-efficiency', 'shelf-life', 'service-temp'],
   generic: ['solids', 'voc', 'viscosity', 'pot-life', 'setting-time', 'compressive', 'pull-off', 'shrinkage', 'service-temp'],
 };
 
@@ -54,29 +59,29 @@ export const CATEGORIES: Category[] = [
     sku('adm-pce', 'Superplasticisers (PCE)', ['PCE/SNF'], ['liquid'], 'IS 9103 / EN 934-2 T3.1/3.2', T.admixture),
     sku('adm-retarder', 'Retarders', ['PCE/SNF'], ['liquid'], 'IS 9103 / EN 934-2 T8', T.admixture),
     sku('adm-accelerator', 'Accelerators', ['PCE/SNF'], ['liquid', 'powder'], 'IS 9103 / EN 934-2 T6', T.admixture),
-    sku('adm-air', 'Air entrainers', ['PCE/SNF'], ['liquid'], 'EN 934-2 T5', T.admixture),
-    sku('adm-wp', 'Waterproofing admixtures', ['crystalline', 'PCE/SNF'], ['liquid', 'powder'], 'EN 934-2 T9', T.admixture),
-    sku('adm-ci', 'Corrosion inhibitors', ['PCE/SNF'], ['liquid'], 'ASTM C1582', T.admixture),
+    sku('adm-air', 'Air entrainers', ['PCE/SNF'], ['liquid'], 'EN 934-2 T5', [...T.admixture, 'spacing-factor', 'freeze-thaw']),
+    sku('adm-wp', 'Waterproofing admixtures', ['crystalline', 'PCE/SNF'], ['liquid', 'powder'], 'EN 934-2 T9', [...T.admixture, 'permeability', 'water-absorption']),
+    sku('adm-ci', 'Corrosion inhibitors', ['PCE/SNF'], ['liquid'], 'ASTM C1582', [...T.admixture, 'corrosion-reduction']),
   ]),
   cat('shotcrete-acc', 1, 'Shotcrete accelerators', 'Wind', 'Alkali-free liquid accelerators', 'Makes sprayed concrete stick and set fast', [
-    sku('sc-af', 'Alkali-free accelerator', ['PCE/SNF'], ['liquid'], 'EN 934-5', T.admixture),
-    sku('sc-alk', 'Alkaline accelerator', ['PCE/SNF'], ['liquid'], 'EN 934-5', T.admixture),
+    sku('sc-af', 'Alkali-free accelerator', ['PCE/SNF'], ['liquid'], 'EN 934-5', T.shotcrete),
+    sku('sc-alk', 'Alkaline accelerator', ['PCE/SNF'], ['liquid'], 'EN 934-5', T.shotcrete),
   ]),
   cat('fibres', 1, 'Fibres', 'Spline', 'PP micro-fibres, steel fibres', 'Tiny fibres that stop cracks', [
-    sku('fib-pp', 'Polypropylene micro-fibre', ['polymer-modified'], ['sheet'], 'EN 14889-2', T.generic),
-    sku('fib-steel', 'Steel fibre', ['cementitious'], ['sheet'], 'EN 14889-1', T.generic),
+    sku('fib-pp', 'Polypropylene micro-fibre', ['polymer-modified'], ['sheet'], 'EN 14889-2', T.fibre),
+    sku('fib-steel', 'Steel fibre', ['cementitious'], ['sheet'], 'EN 14889-1', T.fibre),
   ]),
   cat('grinding-aids', 1, 'Cement grinding aids', 'Cog', 'Amine/glycol grinding aids', 'Helps cement plants grind faster', [
-    sku('ga-glycol', 'Glycol-based grinding aid', ['PCE/SNF'], ['liquid'], 'internal', T.generic),
-    sku('ga-amine', 'Amine-based performance enhancer', ['PCE/SNF'], ['liquid'], 'internal', T.generic),
+    sku('ga-glycol', 'Glycol-based grinding aid', ['PCE/SNF'], ['liquid'], 'EN 197-1 / ASTM C465', T.grindingAid),
+    sku('ga-amine', 'Amine-based performance enhancer', ['PCE/SNF'], ['liquid'], 'EN 197-1 / ASTM C465', T.grindingAid),
   ]),
   cat('curing', 1, 'Curing compounds', 'Droplets', 'Wax / resin curing membranes', 'Keeps fresh concrete from drying too fast', [
-    sku('cur-wax', 'Wax emulsion', ['acrylic'], ['liquid'], 'ASTM C309', T.coating),
-    sku('cur-resin', 'Resin-based', ['acrylic'], ['liquid'], 'ASTM C309', T.coating),
+    sku('cur-wax', 'Wax emulsion', ['acrylic'], ['liquid'], 'ASTM C309', T.curing),
+    sku('cur-resin', 'Resin-based', ['acrylic'], ['liquid'], 'ASTM C309', T.curing),
   ]),
   cat('release', 1, 'Release agents', 'Layers', 'Formwork release oils', 'Stops concrete sticking to moulds', [
-    sku('rel-oil', 'Mineral-oil release agent', ['acrylic'], ['liquid'], 'internal', T.generic),
-    sku('rel-emul', 'Emulsion release agent', ['acrylic'], ['liquid'], 'internal', T.generic),
+    sku('rel-oil', 'Mineral-oil release agent', ['acrylic'], ['liquid'], 'internal', T.release),
+    sku('rel-emul', 'Emulsion release agent', ['acrylic'], ['liquid'], 'internal', T.release),
   ]),
   // 2 Masonry and wall build-up
   cat('block-jointing', 2, 'Block-jointing mortar', 'Grid3x3', 'Thin-bed AAC block mortar', 'Glue for building block walls', [

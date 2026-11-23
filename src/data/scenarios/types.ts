@@ -39,6 +39,8 @@ export interface Scenario {
   id: string;
   label: string;
   chip: string;
+  /** a Magic Start brief that routes to this scenario (tested) */
+  example: string;
   keywords: string[];
   projectName: string;
   codePrefix: string;

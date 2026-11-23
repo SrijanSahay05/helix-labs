@@ -58,6 +58,7 @@ export const TILE_WHITE_S1: Scenario = {
   id: 'tile-white-s1',
   label: 'White C2TE S1 tile adhesive',
   chip: 'White tile adhesive · C2TE S1',
+  example: 'White C2TE S1 tile adhesive for vitrified floors in India',
   keywords: ['white tile adhesive', 'white adhesive', 'c2tes1', 'c2te s1', 'vitrofix', 'extrofix', 'roff'],
   projectName: 'White C2TE S1 tile adhesive — India',
   codePrefix: 'HX-TW',

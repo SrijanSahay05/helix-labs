@@ -24,6 +24,9 @@ export const PROPERTIES: Property[] = [
   P('mix-ratio', 'chemical', 'Mix ratio', 'How to mix the parts', 'A:B', { internal: 'internal' }),
   P('chem-resistance', 'chemical', 'Chemical resistance', 'Stands up to chemicals', 'class', { EN: 'EN 12808-1', ASTM: 'ASTM C267' }),
   P('shelf-life', 'chemical', 'Shelf life', 'How long it keeps in the bag', 'months', { internal: 'internal' }),
+  P('blaine', 'chemical', 'Cement fineness (Blaine)', 'How fine the cement is', 'cm²/g', { EN: 'EN 196-6', ASTM: 'ASTM C204' }),
+  P('residue-45', 'chemical', 'Residue on 45 µm sieve', 'Coarse particles left', '%', { EN: 'EN 196-6', ASTM: 'ASTM C430' }),
+  P('mill-output', 'chemical', 'Mill output gain', 'More cement per hour', '%', { internal: 'plant trial' }),
   P('hazard-class', 'chemical', 'Hazard class', 'Safety label', 'GHS', { internal: 'internal' }),
   // Rheological
   P('viscosity', 'rheological', 'Viscosity', 'How thick it is', 'mPa·s', { EN: 'EN ISO 2555', ASTM: 'ASTM D2196' }),
@@ -41,6 +44,7 @@ export const PROPERTIES: Property[] = [
   P('fresh-density', 'rheological', 'Fresh density', 'Weight of the wet mix', 'kg/m³', { EN: 'EN 1015-6', ASTM: 'ASTM C185' }),
   P('air-content', 'rheological', 'Air content', 'Air bubbles in the mix', '%', { IS: 'IS 1199', EN: 'EN 1015-7', ASTM: 'ASTM C231' }),
   P('bleeding', 'rheological', 'Bleeding', 'Water rising to the top', '%', { EN: 'EN 480-4', ASTM: 'ASTM C940' }),
+  P('drying-time', 'rheological', 'Drying time', 'Dry to touch in', 'h', { ASTM: 'ASTM D1640' }),
   P('slump-retention', 'rheological', 'Slump retention @ 60 min', 'Stays workable in the truck', 'mm', { IS: 'IS 1199', EN: 'EN 12350-2', ASTM: 'ASTM C143' }),
   P('water-reduction', 'rheological', 'Water reduction', 'Water saved in the mix', '%', { IS: 'IS 9103', EN: 'EN 934-2', ASTM: 'ASTM C494' }),
   // Mechanical
@@ -60,6 +64,8 @@ export const PROPERTIES: Property[] = [
   P('expansion', 'mechanical', 'Expansion (non-shrink)', 'Stays tight under plates', '%', { ASTM: 'ASTM C1090', EN: 'EN 445' }),
   P('abrasion', 'mechanical', 'Abrasion resistance', 'Resists wear', 'mm³', { EN: 'EN 13892-4', ASTM: 'ASTM C944' }),
   P('hardness', 'mechanical', 'Hardness', 'Surface hardness', 'Shore D', { ASTM: 'ASTM D2240' }),
+  P('early-strength', 'mechanical', 'Early strength (6 h)', 'Strength a few hours after spraying', 'N/mm²', { EN: 'EN 14488-2' }),
+  P('residual-flexural', 'mechanical', 'Residual flexural strength (fR3)', 'Strength left after cracking', 'N/mm²', { EN: 'EN 14651', ASTM: 'ASTM C1609' }),
   P('pull-off', 'mechanical', 'Pull-off bond', 'Sticks to the old concrete', 'N/mm²', { IS: 'IS 13311', EN: 'EN 1542', ASTM: 'ASTM C1583' }),
   // Durability
   P('water-absorption', 'durability', 'Water absorption', 'Soaks up water', '%', { EN: 'EN 12808-5', ASTM: 'ASTM C642' }),
@@ -71,6 +77,11 @@ export const PROPERTIES: Property[] = [
   P('service-temp', 'durability', 'Service temperature', 'Temperature range in use', '°C', { internal: 'internal' }),
   P('efflorescence', 'durability', 'Efflorescence', 'White salt marks', 'rating', { internal: 'internal' }),
   P('coverage', 'durability', 'Coverage', 'How far a bag goes', 'kg/m²', { internal: 'internal' }),
+  P('crack-reduction', 'durability', 'Plastic-shrinkage crack reduction', 'Fewer early cracks', '%', { ASTM: 'ASTM C1579' }),
+  P('moisture-loss', 'durability', 'Moisture loss (72 h)', 'Water lost while curing', 'kg/m²', { ASTM: 'ASTM C156' }),
+  P('release-efficiency', 'durability', 'Release efficiency', 'Clean surface after demoulding', '%', { internal: 'internal' }),
+  P('spacing-factor', 'durability', 'Air-void spacing factor', 'How evenly air bubbles spread', 'mm', { EN: 'EN 480-11', ASTM: 'ASTM C457' }),
+  P('corrosion-reduction', 'durability', 'Corrosion reduction', 'Less rust on steel', '%', { ASTM: 'ASTM C1582 / G109' }),
   P('self-healing', 'durability', 'Crack self-healing width', 'Seals small cracks by itself', 'mm', { internal: 'internal', EN: 'EN 12390-8' }),
   P('cost', 'chemical', 'Cost per kg', 'Price per kg', '₹/kg', { internal: 'computed' }),
 ];

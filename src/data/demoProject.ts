@@ -108,6 +108,7 @@ export const TILE_SCENARIO: Scenario = {
   id: 'tile',
   label: 'Exterior tile adhesive',
   chip: 'Tile adhesive · C2TE S1',
+  example: 'Adhesive for 1200 × 600 vitrified tiles on an exterior facade',
   keywords: ['tile', 'adhesive', 'c2te', 'c2', 'vitrified', 'facade', 's1'],
   projectName: 'Exterior tile adhesive — Large format',
   codePrefix: 'HX-TA',

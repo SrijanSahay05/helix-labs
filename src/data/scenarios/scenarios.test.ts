@@ -1,0 +1,48 @@
+import { describe, expect, it } from 'vitest';
+import { CATEGORIES, findSubcategory } from '../categories';
+import { PROP } from '../properties';
+import { MAT } from '../rawMaterials';
+import { routeScenario, SCENARIOS, scenarioForSub } from '.';
+
+/** Groups whose every subcategory has a demo scenario; grows one phase at a time. */
+const COVERED_GROUPS = [1];
+
+const midSum = (c: { range: [number, number] }[]) => c.reduce((n, x) => n + (x.range[0] + x.range[1]) / 2, 0);
+
+describe('demo scenarios', () => {
+  it('ids are unique', () => {
+    expect(new Set(SCENARIOS.map((s) => s.id)).size).toBe(SCENARIOS.length);
+  });
+
+  it.each(SCENARIOS.map((s) => [s.id, s] as const))('%s: data references resolve', (_, s) => {
+    const found = findSubcategory(s.subcategoryId);
+    expect(found?.cat.id).toBe(s.categoryId);
+    const props = [
+      ...s.targets.map((t) => t.propertyId),
+      ...s.measured,
+      ...s.top3.map((t) => t.id).filter((id) => id !== 'cost'),
+      ...s.benchmarks.flatMap((b) => b.values.map((v) => v.propertyId)),
+      ...s.pathways.flatMap((p) => p.predicted.map((v) => v.propertyId)),
+    ];
+    expect(props.filter((id) => !PROP[id])).toEqual([]);
+    const mats = [s.balanceMaterial, s.leverMaterial, ...s.pathways.flatMap((p) => p.composition.map((c) => c.materialId))];
+    expect(mats.filter((id) => !MAT[id])).toEqual([]);
+    const targetIds = new Set(s.targets.map((t) => t.propertyId));
+    expect(s.measured.filter((id) => !targetIds.has(id))).toEqual([]);
+    const srcIds = new Set(s.sources.map((x) => x.id));
+    expect(s.pathways.flatMap((p) => p.citations).filter((id) => !srcIds.has(id))).toEqual([]);
+  });
+
+  it.each(SCENARIOS.flatMap((s) => s.pathways.map((p) => [`${s.id} ${p.id}`, p] as const)))('%s: composition sums to ~100 %%', (_, p) => {
+    expect(midSum(p.composition)).toBeGreaterThan(95);
+    expect(midSum(p.composition)).toBeLessThan(105);
+  });
+
+  it.each(SCENARIOS.map((s) => [s.id, s] as const))('%s: its example brief routes to it', (_, s) => {
+    expect(routeScenario(s.example).id).toBe(s.id);
+  });
+
+  it.each(CATEGORIES.filter((c) => COVERED_GROUPS.includes(c.group)).flatMap((c) => c.subcategories.map((x) => [x.id] as const)))('%s has a demo scenario', (id) => {
+    expect(scenarioForSub(id)?.subcategoryId).toBe(id);
+  });
+});
