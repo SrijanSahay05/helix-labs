@@ -1,5 +1,6 @@
 import type { Pathway, Proposal, Result, StandardFamily, TargetRow, Trial } from '@/types';
 import type { Scenario } from '@/data/scenarios/types';
+import { profileFor } from '@/data/useCaseProfiles';
 import { methodFor, PROP } from '@/data/properties';
 import { balanceTo100, midpointRecipe } from './cost';
 import { statusFor } from './status';
@@ -41,8 +42,6 @@ export function buildTrials(s: Scenario, pathway: Pathway): Trial[] {
   });
 }
 
-const FAILURE_MODES = ['Adhesive (tile interface)', 'Cohesive in adhesive', 'Cohesive in substrate', 'Tile failure'];
-
 function readingsAround(mean: number, rnd: () => number, n = 5): number[] {
   const spread = Math.abs(mean) * 0.06 || 0.02;
   const vals = Array.from({ length: n - 1 }, () => r2(mean + (rnd() - 0.5) * 2 * spread));
@@ -68,6 +67,7 @@ const AGED = new Set(['adh-heat', 'adh-ft', 'self-healing', 'shrinkage', 'freeze
 /** Lab results for trials. Tile scenario uses the hand-seeded means. */
 export function buildResults(s: Scenario, trials: Trial[], targets: TargetRow[], today = new Date()): Result[] {
   const out: Result[] = [];
+  const modes = profileFor(s.subcategoryId).failureModes;
   for (const propertyId of s.measured) {
     const row = targets.find((t) => t.propertyId === propertyId);
     if (!row) continue;
@@ -83,7 +83,7 @@ export function buildResults(s: Scenario, trials: Trial[], targets: TargetRow[],
         propertyId,
         readings: readingsAround(mean, rnd),
         mean,
-        failureMode: status === 'pass' ? FAILURE_MODES[1 + Math.floor(rnd() * 2)] : FAILURE_MODES[0],
+        failureMode: status === 'pass' ? modes[1 + Math.floor(rnd() * 2)] : modes[0],
         testDate: d.toISOString().slice(0, 10),
         status,
       });

@@ -10,8 +10,7 @@ import { PROP } from '@/data/properties';
 import { useCaseDisplay } from '@/agent/scripts/intake';
 import { useUI } from '@/store/ui';
 import { useTasks } from '@/store/tasks';
-import type { UseCase } from '@/types';
-import { useDraft } from './useDraft';
+import { draftUseCaseKeys, useDraft } from './useDraft';
 import { cn } from '@/lib/cn';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
@@ -60,7 +59,7 @@ export function BriefPanel({ className }: { className?: string }) {
   const cat = findCategory(d.categoryId);
   const sub = findSubcategory(d.subcategoryId)?.sub;
   const uc = d.useCase;
-  const ucKeys = (Object.keys(uc) as (keyof UseCase)[]).filter((k) => uc[k] !== undefined && k !== 'standardClass');
+  const ucKeys = draftUseCaseKeys(d).filter((k) => k !== 'standardClass');
   const sections = [
     { k: 'who', filled: !!d.mode },
     { k: 'product', filled: !!cat },

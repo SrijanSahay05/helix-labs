@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildResearch } from '@/data/demo/research';
 import { SCENARIO } from '@/data/scenarios';
 import { findSubcategory } from '@/data/categories';
+import { pickProfile, profileFor } from '@/data/useCaseProfiles';
+import { useCaseDisplay } from '@/agent/scripts/intake';
 import { PROP } from '@/data/properties';
 import { MAT } from '@/data/rawMaterials';
 import { INTAKE_STEPS } from '@/store/project';
@@ -51,13 +53,14 @@ function BriefDrawer({ open, onClose }: { open: boolean; onClose: () => void }) 
   const mode = useUI((s) => s.mode);
   const s = SCENARIO[d.scenarioId] ?? SCENARIO.tile;
   const sub = findSubcategory(d.subcategoryId ?? s.subcategoryId)?.sub;
-  const uc = { ...s.useCase, ...d.useCase };
+  const subId = d.subcategoryId ?? s.subcategoryId;
+  const uc = pickProfile({ ...s.useCase, ...d.useCase }, subId);
   const targets = (d.targets.length ? d.targets : []).filter((t) => t.priority === 'must');
   const ceiling = d.constraints.costCeiling ?? s.constraints.costCeiling;
   const rows: [string, string][] = [
     ['Product', sub?.name ?? s.label],
     ['Standard', d.standard ?? s.standard],
-    ['Use case', `${uc.materialType} ${uc.size?.w ?? ''}×${uc.size?.h ?? ''} mm on ${uc.substrate}, ${uc.exposure}, ${uc.climate}`],
+    ['Use case', profileFor(subId).fields.filter((k) => k !== 'standardClass' && uc[k] !== undefined).slice(0, 5).map((k) => useCaseDisplay(k, uc[k])).join(' · ')],
     ['Cost ceiling', ceiling !== undefined ? `≤ ₹${ceiling}/kg` : '—'],
     ['Compliance', (d.constraints.compliance ?? s.constraints.compliance).join(', ') || '—'],
     ['Material limits', (d.constraints.materialLimits ?? s.constraints.materialLimits).map((m) => `${MAT[m.materialId]?.name ?? m.materialId} ${m.exclude ? 'excluded' : `≤ ${m.maxPct} %`}`).join(', ') || '—'],

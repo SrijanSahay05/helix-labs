@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import type { Project, Result } from '@/types';
 import { PROP } from '@/data/properties';
 import { SCENARIO } from '@/data/scenarios';
+import { profileFor } from '@/data/useCaseProfiles';
 import { useProjects } from '@/store/project';
 import { AgentConsole } from '@/components/ai/AgentConsole';
 import { Button } from '@/components/ui/Button';
@@ -39,8 +40,6 @@ function useResultsSync(projectId: string) {
     toggle: (id: string) => active && patch(key, (v) => ({ selection: v.selection.includes(id) ? v.selection.filter((x) => x !== id) : [...v.selection, id] })),
   };
 }
-
-const FAILURE_MODES = ['Adhesive (tile interface)', 'Cohesive in adhesive', 'Cohesive in substrate', 'Tile failure'];
 
 export function ResultCell({ r, onOpen }: { r?: Result; onOpen?: () => void }) {
   if (!r) return <span className="text-ink3">—</span>;
@@ -208,7 +207,7 @@ export function StageResults({ p }: { p: Project }) {
               <span className="label">Failure mode</span>
               <select className="input mt-1" value={cur.failureMode ?? ''} onChange={(e) => setResult({ failureMode: e.target.value })}>
                 <option value="">—</option>
-                {FAILURE_MODES.map((f) => (
+                {profileFor(p.subcategoryId).failureModes.map((f) => (
                   <option key={f}>{f}</option>
                 ))}
               </select>

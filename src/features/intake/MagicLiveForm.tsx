@@ -8,9 +8,7 @@ import { getIn } from '@/lib/path';
 import { cn } from '@/lib/cn';
 import type { IntakeStep } from '@/store/project';
 import type { UseCase } from '@/types';
-import { useDraft } from './useDraft';
-
-const UC: (keyof UseCase)[] = ['substrate', 'surfaces', 'materialType', 'size', 'exposure', 'climate', 'appTemp', 'load', 'method', 'timeToGroutH', 'timeToTrafficH', 'standardClass'];
+import { draftProfile, useDraft } from './useDraft';
 
 function fmt(path: string, v: unknown): string {
   if (v === undefined || v === null || (Array.isArray(v) && v.length === 0)) return '';
@@ -37,7 +35,7 @@ const GROUPS_LIVE: { step: IntakeStep; title: string; fields: [string, string][]
   { step: 'who', title: 'Who is using Helix', fields: [['mode', 'Who is using']] },
   { step: 'category', title: 'Category', fields: [['group', 'Group'], ['categoryId', 'Category']] },
   { step: 'subcategory', title: 'Subcategory & standard', fields: [['subcategoryId', 'Subcategory'], ['chemistry', 'Chemistry'], ['forms', 'Form'], ['standard', 'Standard']] },
-  { step: 'usecase', title: 'Exact use case', fields: UC.map((k) => [`useCase.${k}`, USE_CASE_LABEL[k]?.scientist ?? k]), cols: 3 },
+  { step: 'usecase', title: 'Exact use case', fields: [], cols: 3 },
   { step: 'benchmark', title: 'Closest benchmark', fields: [['benchmarks', 'Benchmark']] },
   { step: 'targets', title: 'Property targets', fields: [['targets', 'Targets'], ['top3', 'Top 3']] },
   {
@@ -61,7 +59,8 @@ export function MagicLiveForm({ onOpen }: { onOpen: (s: IntakeStep) => void }) {
   const d = useDraft();
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      {GROUPS_LIVE.map((g) => {
+      {GROUPS_LIVE.map((group) => {
+        const g = group.step === 'usecase' ? { ...group, fields: draftProfile(d).fields.map((k): [string, string] => [`useCase.${k}`, USE_CASE_LABEL[k]?.scientist ?? k]) } : group;
         const done = !!d.done[g.step];
         return (
           <div key={g.step} className={cn('card p-4', (g.cols ?? 0) >= 3 && 'md:col-span-2')}>

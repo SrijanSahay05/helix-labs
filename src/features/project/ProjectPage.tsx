@@ -9,6 +9,7 @@ import { useCrewMonitor } from '@/features/crew-monitor/selectors';
 import { STAGES } from '@/data/projectFactory';
 import { useCaseDisplay } from '@/agent/scripts/intake';
 import { USE_CASE_LABEL } from '@/data/copy';
+import { profileFor } from '@/data/useCaseProfiles';
 import { PROP } from '@/data/properties';
 import { SCENARIO } from '@/data/scenarios';
 import { TargetsTable } from '@/components/tables/TargetsTable';
@@ -21,7 +22,6 @@ import { useMode } from '@/lib/useModeText';
 import { buildReport } from '@/lib/reports';
 import { printPdf } from '@/lib/exporter';
 import { targetText } from '@/lib/format';
-import type { UseCase } from '@/types';
 import { BriefHeader } from './BriefHeader';
 import { FlowRail, type FlowNode } from './FlowRail';
 import { StageShell } from './StageShell';
@@ -83,7 +83,7 @@ function SpecCard({ p }: { p: Project }) {
 
 function FullBrief({ p }: { p: Project }) {
   const mode = useMode();
-  const keys = (Object.keys(p.useCase) as (keyof UseCase)[]).filter((k) => p.useCase[k] !== undefined);
+  const keys = profileFor(p.subcategoryId).fields.filter((k) => p.useCase[k] !== undefined);
   return (
     <div className="space-y-4 text-sm">
       <div className="leading-6 text-ink2">

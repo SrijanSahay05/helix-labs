@@ -411,7 +411,7 @@ export function buildResearch(scenarioId = 'tile'): ResearchData {
     ceiling,
     concepts: pack?.concepts ?? [
       { title: s.productGuess, plain: s.label },
-      { title: `${s.useCase.exposure === 'exterior' ? 'Exterior' : 'Interior'} · ${s.useCase.climate}`, plain: `${s.useCase.exposure === 'exterior' ? 'Outside' : 'Inside'} use, ${s.useCase.climate.toLowerCase()} weather` },
+      { title: `${s.useCase.exposure === 'exterior' ? 'Exterior' : 'Interior'} · ${s.useCase.climate}`, plain: `${s.useCase.exposure === 'exterior' ? 'Outside' : 'Inside'} use, ${(s.useCase.climate ?? 'local').toLowerCase()} weather` },
       { title: `${s.top3.map((t) => PROP[t.id]?.name ?? t.id).slice(0, 2).join(' + ')} at ≤ ₹${ceiling}/kg`, plain: 'Performance that matters most, within budget' },
     ],
     keywords: pack?.keywords ?? s.clusters.slice(0, 5).map((c, i) => ({ concept: i % 3, term: c, synonyms: c.toLowerCase().split(/[ &]+/).filter((w) => w.length > 3) })),
